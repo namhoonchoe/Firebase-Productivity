@@ -1,6 +1,6 @@
 import { ReactElement, useState } from "react";
 import HambergerIcon from "@/components/svgIcons/HambergerIcon";
-import PersonIcon from "@/components/svgIcons/PersonIcon";
+import MenuPopover from "./MenuPopover";
 import Sidebar from "./Sidebar";
 export default function SidebarLayout({
   children,
@@ -51,9 +51,7 @@ export default function SidebarLayout({
               </g>
             </svg>
           </div>
-          <button>
-            <PersonIcon />
-          </button>
+         <MenuPopover/>
         </header>
 
         {/* sidebar */}
