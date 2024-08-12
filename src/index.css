@@ -9,12 +9,24 @@
   .nav-button {
     @apply flex justify-start items-center flex-grow-0 flex-shrink-0 w-[196px]  gap-6 p-4 rounded-xl text-white
   }
+  .nav-button-shrinked {
+    @apply flex justify-start items-center flex-grow-0 flex-shrink-0 w-[56px]  gap-6 p-4 rounded-xl text-white
+  }
 }
 
 @layer utilities {
   .layout-grid {
     display: grid;
-    grid-template-columns: 240px 1fr;
+    grid-template-columns: fit-content(224px) 1fr;
+    grid-template-areas:
+    "header header"
+    "sidebar main"
+    "sidebar main";
+  }
+
+  .layout-grid-shrinked {
+    display: grid;
+    grid-template-columns: fit-content(64px) 1fr;
     grid-template-areas:
     "header header"
     "sidebar main"
