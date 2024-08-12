@@ -1,10 +1,10 @@
 import SocialLoginButton from "@/components/ui/SocialLoginButton";
 import GoogleIcon from "@/components/svgIcons/google-icon";
 import GithubIcon from "@/components/svgIcons/github-icon";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/shadcn/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/shadcn/card";
+import { Input } from "@/components/ui/shadcn/input";
+import { Label } from "@/components/ui/shadcn/label";
 import { Link, useNavigate } from "react-router-dom";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { FirebaseError } from "firebase/app";

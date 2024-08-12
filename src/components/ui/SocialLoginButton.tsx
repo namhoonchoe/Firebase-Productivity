@@ -1,5 +1,5 @@
 import { ReactElement } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/shadcn/button";
  
 export default function SocialLoginButton({
   providerIcon,

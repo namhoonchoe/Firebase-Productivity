@@ -6,9 +6,35 @@
   .fit-center {
     @apply flex flex-col m-0 justify-start items-center w-full absolute left-1/2 -translate-x-1/2 min-h-dvh;
   }
+  .nav-button {
+    @apply flex justify-start items-center flex-grow-0 flex-shrink-0 w-[196px]  gap-6 p-4 rounded-xl text-white
+  }
 }
 
 @layer utilities {
+  .layout-grid {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    grid-template-areas:
+    "header header"
+    "sidebar main"
+    "sidebar main";
+  }
+
+  .grid-header {
+    grid-area: header;
+  }
+
+  .grid-side-bar {
+      grid-area: sidebar;
+  }
+
+  .grid-main {
+    grid-area: main;
+  }
+
+
+  
   .nav-slider {
     display: inline-flex;
     overflow-x: scroll;
