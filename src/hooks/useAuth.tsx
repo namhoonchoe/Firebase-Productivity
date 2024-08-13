@@ -51,7 +51,7 @@ export default function useAuth() {
   const handleSignOut = async () => {
     try {
       await signOut(auth);
-      navigate("/")
+      navigate("/auth/signin")
     } catch (e) {
       if (e instanceof FirebaseError) {
         console.log(e.message);
