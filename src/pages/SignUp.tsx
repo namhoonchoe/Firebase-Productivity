@@ -3,11 +3,8 @@ import { Button } from "@/components/ui/shadcn/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/shadcn/card";
 import { Input } from "@/components/ui/shadcn/input";
 import { Label } from "@/components/ui/shadcn/label";
-import { Link, useNavigate } from "react-router-dom";
-import { FirebaseError } from "firebase/app";
-
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { auth } from "../lib/firebase";
+import { Link } from "react-router-dom";
+import { signUp } from "@/services/firebase";
 
 type FormInput = {
   email: string;
@@ -16,7 +13,6 @@ type FormInput = {
   checkPassword: string;
 };
 export default function SignUp() {
-  const navigate = useNavigate();
 
   const {
     register,
@@ -25,22 +21,8 @@ export default function SignUp() {
     watch,
   } = useForm<FormInput>();
 
-  const signUp = async (email: string, password: string) => {
-    try {
-      const credentials = createUserWithEmailAndPassword(auth, email, password);
 
-      await updateProfile((await credentials).user, {
-        displayName: watch("username"),
-      });
-      navigate("/");
-    } catch (e) {
-      if (e instanceof FirebaseError) {
-        console.log(e.message);
-      }
-    }
-  };
-
-  const onSubmit = () => signUp(watch("email"), watch("password"));
+  const onSubmit = () => signUp(watch("email"), watch("password"), watch("username"));
 
   return (
     <div className="flex flex-col items-center justify-start mt-20">

@@ -1,5 +1,5 @@
 import { useState, useEffect, ReactElement } from "react";
-import { auth } from "../../lib/firebase";
+import { auth } from "../../services/firebase";
 import Loading from "../ui/Loading";
 
 

@@ -39,6 +39,7 @@
 
   .grid-side-bar {
       grid-area: sidebar;
+      
   }
 
   .grid-main {
