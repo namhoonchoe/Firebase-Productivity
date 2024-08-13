@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/shadcn
 import { Input } from "@/components/ui/shadcn/input";
 import { Label } from "@/components/ui/shadcn/label";
 import { Link } from "react-router-dom";
-import { signUp } from "@/services/firebase";
+ import useAuth from "@/hooks/useAuth";
 
 type FormInput = {
   email: string;
@@ -13,7 +13,7 @@ type FormInput = {
   checkPassword: string;
 };
 export default function SignUp() {
-
+ const { signUp } = useAuth()
   const {
     register,
     handleSubmit,
@@ -21,8 +21,8 @@ export default function SignUp() {
     watch,
   } = useForm<FormInput>();
 
-
-  const onSubmit = () => signUp(watch("email"), watch("password"), watch("username"));
+  
+  const onSubmit = () => signUp(watch("email"), watch("password"), watch("username") );
 
   return (
     <div className="flex flex-col items-center justify-start mt-20">

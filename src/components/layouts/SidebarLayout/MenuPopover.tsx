@@ -7,11 +7,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/shadcn/dropdown-menu";
 import { Button } from "@/components/ui/shadcn/button";
- import { handleSignOut } from "@/services/firebase";
+import useAuth from "@/hooks/useAuth";
 
 export default function MenuPopover() {
-
-
+  const { handleSignOut } = useAuth();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

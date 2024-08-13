@@ -10,10 +10,11 @@ import {
 } from "@/components/ui/shadcn/card";
 import { Input } from "@/components/ui/shadcn/input";
 import { Label } from "@/components/ui/shadcn/label";
-import { Link } from "react-router-dom";
+import { Link  } from "react-router-dom";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { signIn, socialLogin } from "@/services/firebase";
 import { GoogleAuthProvider, GithubAuthProvider } from "firebase/auth";
+import useAuth from "@/hooks/useAuth";
+
 
 type FormInput = {
   email: string;
@@ -23,15 +24,16 @@ type FormInput = {
 export default function SignIn() {
   const githubProvider = new GithubAuthProvider();
   const googleAuthProvider = new GoogleAuthProvider();
-
   const {
     register,
     handleSubmit,
     formState: { errors },
    } = useForm<FormInput>();
 
+   const { signIn, socialLogin } = useAuth()
+
   const onSubmit: SubmitHandler<FormInput> = ({ email, password }) => {
-    signIn(email, password);
+    signIn(email, password );
   };
 
   return (
@@ -79,12 +81,12 @@ export default function SignIn() {
               <SocialLoginButton
                 providerIcon={<GoogleIcon />}
                 message={"구글 계정으로 시작하기"}
-                onClick={() => socialLogin(googleAuthProvider)}
+                onClick={() => socialLogin(googleAuthProvider )}
               />
               <SocialLoginButton
                 providerIcon={<GithubIcon />}
                 message={"깃허브 계정으로 시작하기"}
-                onClick={() => socialLogin(githubProvider)}
+                onClick={() => socialLogin(githubProvider )}
               />
             </div>
           </div>
