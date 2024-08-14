@@ -81,12 +81,12 @@ export default function SignIn() {
               <SocialLoginButton
                 providerIcon={<GoogleIcon />}
                 message={"구글 계정으로 시작하기"}
-                onClick={() => socialLogin(googleAuthProvider )}
+                onClick={() => socialLogin(googleAuthProvider)}
               />
               <SocialLoginButton
                 providerIcon={<GithubIcon />}
                 message={"깃허브 계정으로 시작하기"}
-                onClick={() => socialLogin(githubProvider )}
+                onClick={() => socialLogin(githubProvider)}
               />
             </div>
           </div>

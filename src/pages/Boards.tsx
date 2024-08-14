@@ -1,6 +1,7 @@
-import React from "react";
+ 
 
 export default function Boards() {
+ 
   return (
     <div className="flex flex-col w-full gap-12 mt-12  px-5 ">
       <p>보드 목록</p>
