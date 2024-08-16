@@ -30,7 +30,7 @@ export default function Sidebar({ isShrinked }: { isShrinked: boolean }) {
           </Link>
         </section>
       ) : (
-        <section className="flex flex-col justify-start items-center w-56  gap-8 px-1.5 py-8 bg-zinc-900  sticky top-14 grid-side-bar  min-h-[calc(100vh-56px)] xl:h-[calc(100vh-56px)]  ">
+        <section className=" grid-side-bar flex flex-col justify-start items-center w-56 top-14 sticky min-h-[calc(100vh-56px)]   gap-8 px-1.5 py-8 bg-zinc-900     ">
           <Link to="/">
             <div className="nav-button">
               <HomeIcon />
