@@ -20,7 +20,7 @@ type FormInput = {
   boardName: string;
 };
 
-export default function BoardPage() {
+export default function Board() {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [boardState, setBoardState] = useState<BoardDocument>({
     board_id: "",
@@ -42,14 +42,16 @@ export default function BoardPage() {
     toggleEdit();
   };
 
+  const onSubmit: SubmitHandler<FormInput> = ({ boardName }) => {
+    editBoardName(boardName);
+  };
+
   const deleteBoard = async () => {
     await deleteDoc(doc(db, "boards", `${boardState.board_id}`));
     navigate("/boards");
   };
 
-  const onSubmit: SubmitHandler<FormInput> = ({ boardName }) => {
-    editBoardName(boardName);
-  };
+ 
 
   useEffect(() => {
     let unsubscribe: Unsubscribe | null = null;

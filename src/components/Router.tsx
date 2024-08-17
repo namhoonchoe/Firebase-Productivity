@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import Home from "@/pages/Home";
-import BoardPage from "@/pages/BoardPage";
+import Board from "@/pages/Board";
 import Boards from "@/pages/Boards";
 import Profile from "@/pages/Profile";
 import SignIn from "@/pages/SignIn";
@@ -30,7 +30,7 @@ const RootRouter = createBrowserRouter([
         path: "boards",
         element: <Boards />,
       },
-      { path: "boards/:boardId", element: <BoardPage /> },
+      { path: "boards/:boardId", element: <Board /> },
       { path: "memo", element: <MemoIntro /> },
       { path: "memo/:momoId", element: <Memo /> },
 
