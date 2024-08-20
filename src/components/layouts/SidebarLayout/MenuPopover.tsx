@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import PersonIcon from "@/components/svgIcons/PersonIcon";
+import { PersonIcon } from "@/components/svgIcons";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,

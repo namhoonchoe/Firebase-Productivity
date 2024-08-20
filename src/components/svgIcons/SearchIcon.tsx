@@ -11,8 +11,7 @@ export default function SearchIcon() {
     >
       <mask
         id="mask0_6_684"
-        style="mask-type:alpha"
-        maskUnits="userSpaceOnUse"
+         maskUnits="userSpaceOnUse"
         x="0"
         y="0"
         width="25"

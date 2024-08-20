@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/shadcn/input";
 import { db } from "@/services/firebase";
 import { Unsubscribe } from "firebase/auth";
 import { BoardDocument } from "@/Types/FireStoreModels";
-import { Button } from "@/components/ui/shadcn/button";
 import {
   Popover,
   PopoverContent,
@@ -15,6 +14,7 @@ import {
 import { PopoverClose } from "@radix-ui/react-popover";
 
 import CloseIcon from "@/components/svgIcons/CloseIcon";
+import Kanban from "./Kanban";
 
 type FormInput = {
   boardName: string;
@@ -26,10 +26,8 @@ export default function Board() {
     board_id: "",
     board_name: "",
     last_edited: "",
-    list_ids: [],
-    user_id: "",
+    section_ids: [],
   });
- 
 
   const navigate = useNavigate();
   const toggleEdit = () => setIsEdit(!isEdit);
@@ -38,7 +36,9 @@ export default function Board() {
 
   const editBoardName = async (boardName: string) => {
     /** 타입 맟추기용 꼼수 template literal */
-    await updateDoc(doc(db, "boards", `${boardState.board_id}`), { board_name: boardName });
+    await updateDoc(doc(db, "boards", `${boardState.board_id}`), {
+      board_name: boardName,
+    });
     toggleEdit();
   };
 
@@ -50,8 +50,6 @@ export default function Board() {
     await deleteDoc(doc(db, "boards", `${boardState.board_id}`));
     navigate("/boards");
   };
-
- 
 
   useEffect(() => {
     let unsubscribe: Unsubscribe | null = null;
@@ -82,16 +80,13 @@ export default function Board() {
   /* get task list from firestore
   
   */
-  if(!boardState) 
-    return (
-      <div>Loading...</div>
-    )
+  if (!boardState) return <div>Loading...</div>;
 
   return (
-    <section className="w-full flex flex-col justify-start items-start ">
-      <header className="w-full h-16 overflow-hidden flex pl-5 items-center justify-start shadow-sm bg-white">
+    <section className="flex w-full flex-col items-start justify-start">
+      <header className="flex h-16 w-full items-center justify-start overflow-hidden bg-white pl-5 shadow-sm">
         {isEdit ? (
-          <div className="flex justify-start items-center gap-2">
+          <div className="flex items-center justify-start gap-2">
             <form onSubmit={handleSubmit(onSubmit)}>
               <Input
                 id="user"
@@ -106,14 +101,12 @@ export default function Board() {
             </button>
           </div>
         ) : (
-          <div className="flex justify-start items-center gap-2">
+          <div className="flex items-center justify-start gap-2">
             <p onClick={toggleEdit}>{boardState.board_name}</p>
             <Popover>
               <PopoverTrigger>
                 <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
+                  width={width}                  height={height}                  viewBox="0 0 24 24"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                 >
@@ -123,9 +116,12 @@ export default function Board() {
                   />
                 </svg>
               </PopoverTrigger>
-              <PopoverContent className="w-60 flex flex-col justify-start">
-                <section className="flex flex-col gap-2 justify-center items-start w-full">
-                  <header className="flex flex-row justify-between items-center w-full">
+              <PopoverContent
+                className="flex w-60 flex-col justify-start"
+                align="start"
+              >
+                <section className="flex w-full flex-col items-start justify-center gap-2">
+                  <header className="flex w-full flex-row items-center justify-between">
                     <h1 onClick={deleteBoard}>delete board</h1>
                     <PopoverClose>
                       <CloseIcon />
@@ -138,7 +134,9 @@ export default function Board() {
           </div>
         )}
       </header>
-      <section className="bg-emerald-400 w-full h-[calc(100vh-120px)]"></section>
+      <section className="h-[calc(100vh-120px)] w-full bg-emerald-400">
+        <Kanban />
+      </section>
     </section>
   );
 }

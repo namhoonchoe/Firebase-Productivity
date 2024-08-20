@@ -1,5 +1,5 @@
 import { ReactElement, useState } from "react";
-import HambergerIcon from "@/components/svgIcons/HambergerIcon";
+import {HamburgerIcon} from "@/components/svgIcons";
 import MenuPopover from "./MenuPopover";
 import Sidebar from "./Sidebar";
 export default function SidebarLayout({
@@ -19,7 +19,7 @@ export default function SidebarLayout({
         {/* header */}
         <header className="flex justify-between items-center grid-header w-full h-14 px-6 py-2 bg-zinc-900 ">
           <button onClick={() => setisShrinked(!isShrinked)}>
-            <HambergerIcon />
+            <HamburgerIcon />
           </button>
 
           <div className="flex justify-start items-center flex-grow-0 flex-shrink-0 w-[500px] relative overflow-hidden gap-2.5 px-4 py-3 rounded-3xl bg-zinc-700">

@@ -42,9 +42,8 @@ export default function Boards() {
         board_id: boardId,
         board_name: boardName,
         last_edited: Date.now().toString(),
-        user_id: user?.uid,
-        list_ids: [],
-      } as BoardDocument);
+        section_ids:[]
+        } as BoardDocument);
       navigate(`/boards/${boardId}`);
     } catch (e) {
       if (e instanceof FirebaseError) {
@@ -66,15 +65,14 @@ export default function Boards() {
 
       unsubscribe = await onSnapshot(boardsQuery, (snapshot) => {
         const boards = snapshot.docs.map((doc) => {
-          const { board_id, board_name, last_edited, user_id, list_ids } =
+          const { board_id, board_name, last_edited, section_ids } =
             doc.data();
           return {
             board_id,
             board_name,
             last_edited,
-            user_id,
-            list_ids,
-          };
+            section_ids,
+           };
         });
         setBoards(boards);
       });

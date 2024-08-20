@@ -1,20 +1,20 @@
-import HomeIcon from "@/components/svgIcons/HomeIcon";
-import BoardsIcon from "@/components/svgIcons/BoardsIcon";
-import MemoIcon from "@/components/svgIcons/MemoIcon";
-import TimerIcon from "@/components/svgIcons/TimerIcon";
+import { HomeIcon } from "@/components/svgIcons";
+import { BoardsIcon } from "@/components/svgIcons";
+import { MemoIcon } from "@/components/svgIcons";
+import { TimerIcon } from "@/components/svgIcons";
 import { Link } from "react-router-dom";
 export default function Sidebar({ isShrinked }: { isShrinked: boolean }) {
   return (
     <>
       {isShrinked ? (
-        <section className="grid-side-bar  flex flex-col justify-start items-center w-16 top-14 min-h-[calc(100vh-56px)]  sticky  gap-8 py-8 bg-zinc-900  ">
+        <section className="grid-side-bar sticky top-14 flex min-h-[calc(100vh-56px)] w-16 flex-col items-center justify-start gap-8 bg-zinc-900 py-8">
           <Link to="/">
             <div className="nav-button-shrinked">
               <HomeIcon />
             </div>
           </Link>
           <Link to="/boards">
-            <div className="nav-button-shrinked ">
+            <div className="nav-button-shrinked">
               <BoardsIcon />
             </div>
           </Link>
@@ -30,29 +30,29 @@ export default function Sidebar({ isShrinked }: { isShrinked: boolean }) {
           </Link>
         </section>
       ) : (
-        <section className=" grid-side-bar flex flex-col justify-start items-center w-56 top-14 sticky min-h-[calc(100vh-56px)]   gap-8 px-1.5 py-8 bg-zinc-900     ">
+        <section className="grid-side-bar sticky top-14 flex min-h-[calc(100vh-56px)] w-56 flex-col items-center justify-start gap-8 bg-zinc-900 px-1.5 py-8">
           <Link to="/">
             <div className="nav-button">
               <HomeIcon />
-              <p className=" subpixel-antialiased  font-medium">홈</p>
+              <p className="font-medium subpixel-antialiased">홈</p>
             </div>
           </Link>
           <Link to="/boards">
-            <div className="nav-button   ">
+            <div className="nav-button">
               <BoardsIcon />
-              <p className=" subpixel-antialiased  font-medium">프로젝트</p>
+              <p className="font-medium subpixel-antialiased">프로젝트</p>
             </div>
           </Link>
           <Link to="/memo">
-            <div className="nav-button  ">
+            <div className="nav-button">
               <MemoIcon />
-              <p className=" subpixel-antialiased  font-medium">메모</p>
+              <p className="font-medium subpixel-antialiased">메모</p>
             </div>
           </Link>
           <Link to="/pomodoro">
-            <div className="nav-button   ">
+            <div className="nav-button">
               <TimerIcon />
-              <p className=" subpixel-antialiased  font-medium">집중 모드</p>
+              <p className="font-medium subpixel-antialiased">집중 모드</p>
             </div>
           </Link>
         </section>

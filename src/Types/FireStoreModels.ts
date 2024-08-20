@@ -13,20 +13,18 @@ export type MemoDocument = {
   memo_id: string;
   title: string;
   bookmarked: boolean;
- 
 };
 
 export type BoardDocument = {
   board_id: string;
   board_name: string;
   last_edited: string;
-  list_ids: string [];
+  section_ids: string [];
 };
 
-export type TaskListDocument = {
-  task_list_id: string;
-  task_list_name: string;
-  tasks: TaskDocument[];
+export type SectionDocument = {
+  section_id: string;
+  section_name: string;
 };
 
 export type TaskDocument = {
