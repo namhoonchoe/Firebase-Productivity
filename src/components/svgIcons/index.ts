@@ -9,6 +9,7 @@ export { default as MemoIcon } from './MemoIcon';
 export { default as PersonIcon } from './PersonIcon';
 export { default as SearchIcon } from './SearchIcon';
 export { default as TimerIcon } from './TimerIcon';
+export { default as ChevronDownIcon } from './ChevronDownIcon';
 
 
  
