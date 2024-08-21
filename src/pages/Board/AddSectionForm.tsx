@@ -1,17 +1,16 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/shadcn/button";
 import { Label } from "@/components/ui/shadcn/label";
 import { Input } from "@/components/ui/shadcn/input";
 import { useForm } from "react-hook-form";
 import { useKanbanStore } from "@/store/KanbanStore";
-import { SectionDocument } from "@/Types/FireStoreModels";
 import CloseIcon from "@/components/svgIcons/CloseIcon";
 import { AddIcon } from "@/components/svgIcons";
 
 export default function AddSectionForm() {
   const [isAdding, setIsAdding] = useState<boolean>(false);
   const { register, handleSubmit, setValue } = useForm<FormInput>();
-  const { createSection, editSection, deleteSection } = useKanbanStore();
+  const { createSection } = useKanbanStore();
 
   type FormInput = {
     sectionName: string;
@@ -22,26 +21,40 @@ export default function AddSectionForm() {
     setValue("sectionName", "");
     setIsAdding(false);
   };
+
   return (
     <>
       {isAdding ? (
-        <section className="flex min-h-36 w-72 flex-shrink-0 flex-grow-0 flex-col items-start justify-start overflow-hidden rounded-xl bg-black">
+        <section className="flex w-72 flex-shrink-0 flex-grow-0 flex-col items-start justify-start overflow-hidden rounded-xl bg-black">
           <form
             onSubmit={handleSubmit(handleValid)}
-            className="flex w-full flex-col items-start justify-start gap-2 px-2 py-1"
+            className="flex w-full flex-col items-start justify-start gap-3 px-3 py-4"
           >
+            <Label
+              className="text-lg font-semibold text-white"
+              htmlFor="section name"
+            >
+              Section Name
+            </Label>
             <Input
+              id="section name"
+              className="rounde-xl h-12 w-full border-slate-400 bg-gray-900 pl-2 capitalize text-white"
               placeholder="Please write a section name"
               {...register("sectionName", {
                 required: "Please write a section name",
               })}
             />
-            <Button className="flex min-h-12 flex-shrink-0 flex-grow-0 items-center justify-start gap-3 rounded-xl bg-gray-900 capitalize text-white">
-              <p>add section </p>
-              <button onClick={() => setIsAdding(!isAdding)} className="*:text-white">
+            <div className="flex items-center justify-start gap-2">
+              <Button className="flex flex-shrink-0 flex-grow-0 items-center justify-start rounded-lg bg-emerald-600 capitalize text-white hover:bg-emerald-400">
+                <p>add section </p>
+              </Button>
+              <Button
+                className="hover:bg-zinc-600"
+                onClick={() => setIsAdding(!isAdding)}
+              >
                 <CloseIcon />
-              </button>
-            </Button>
+              </Button>
+            </div>
           </form>
         </section>
       ) : (

@@ -32,12 +32,13 @@ interface IKanbanStore {
   setTaskList: (lists: Task[]) => void;
 
   createSection: (sectionName: string) => void;
-  editSection: (sectionId: string, sectionName: string) => void;
-  deleteSection: (sectionId: string) => void;
+  editSection: (targetId: string, newSectionName: string) => void;
+  deleteSection: (targetId: string) => void;
+  clearSection: (targetId: string) => void;
 
   createTask: (payload: TaskPayload) => void;
-  deleteTask: (taskId: string) => void;
-  updateTask: (payload: TaskPayload, taskId: string) => void;
+  deleteTask: (targetId: string) => void;
+  updateTask: (payload: TaskPayload, targetId: string) => void;
 }
 
 export const useKanbanStore = create<IKanbanStore>((set) => ({
@@ -62,11 +63,11 @@ export const useKanbanStore = create<IKanbanStore>((set) => ({
       ],
     })),
 
-  editSection: (sectionId: string, sectionName: string) => {
+  editSection: (targetId: string, newSectionName: string) => {
     set((state) => ({
       sections: state.sections.map((section) => {
-        if (section.section_id === sectionId) {
-          return { ...section, sectionName };
+        if (section.section_id === targetId) {
+          return { ...section, section_name:newSectionName };
         } else {
           return section;
         }
@@ -74,17 +75,17 @@ export const useKanbanStore = create<IKanbanStore>((set) => ({
     }));
   },
 
-  deleteSection: (sectionId: string) => {
+  deleteSection: (targetId: string) => {
     set((state) => ({
       sections: state.sections.filter(
-        (section) => section.section_id !== sectionId
+        (section) => section.section_id !== targetId,
       ),
     }));
   },
 
-  clearSection: (sectionId: string) => {
+  clearSection: (targetId: string) => {
     set((state) => ({
-      taskList: state.taskList.filter((task) => task.section_id !== sectionId),
+      taskList: state.taskList.filter((task) => task.section_id !== targetId),
     }));
   },
 

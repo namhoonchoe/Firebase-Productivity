@@ -98,7 +98,7 @@ export default function Board() {
               />
             </form>
             <button onClick={toggleEdit}>
-              <CloseIcon />
+              <CloseIcon fill={"#09090b"}  />
             </button>
           </div>
         ) : (
@@ -116,11 +116,10 @@ export default function Board() {
                   <header className="flex w-full flex-row items-center justify-between">
                     <h1 onClick={deleteBoard}>delete board</h1>
                     <PopoverClose>
-                      <CloseIcon />
+                      <CloseIcon fill={"#09090b"} />
                     </PopoverClose>
                   </header>
-                  <div></div>
-                </section>
+                 </section>
               </PopoverContent>
             </Popover>
           </div>
