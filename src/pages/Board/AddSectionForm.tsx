@@ -25,7 +25,7 @@ export default function AddSectionForm() {
   return (
     <>
       {isAdding ? (
-        <section className="flex w-72 flex-shrink-0 flex-grow-0 flex-col items-start justify-start overflow-hidden rounded-xl bg-black">
+        <section className="flex w-72 flex-shrink-0 flex-grow-0 flex-col items-start justify-start overflow-hidden rounded-xl bg-zinc-900">
           <form
             onSubmit={handleSubmit(handleValid)}
             className="flex w-full flex-col items-start justify-start gap-3 px-3 py-4"
@@ -59,7 +59,7 @@ export default function AddSectionForm() {
         </section>
       ) : (
         <Button
-          className="flex min-h-12 w-72 flex-shrink-0 flex-grow-0 items-center justify-start gap-3 rounded-xl bg-gray-900 capitalize text-white"
+          className="flex min-h-12 w-72 flex-shrink-0 flex-grow-0 items-center justify-start gap-3 rounded-xl bg-zinc-900 capitalize text-white"
           onClick={() => setIsAdding(!isAdding)}
         >
           <AddIcon />

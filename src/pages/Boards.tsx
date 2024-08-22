@@ -42,8 +42,12 @@ export default function Boards() {
         board_id: boardId,
         board_name: boardName,
         last_edited: Date.now().toString(),
-        section_ids:[]
-        } as BoardDocument);
+        board_description: null,
+        board_due_date: null,
+        board_status: null,
+        board_bg_color: "",
+        section_ids: [],
+      } as BoardDocument);
       navigate(`/boards/${boardId}`);
     } catch (e) {
       if (e instanceof FirebaseError) {
@@ -65,14 +69,25 @@ export default function Boards() {
 
       unsubscribe = await onSnapshot(boardsQuery, (snapshot) => {
         const boards = snapshot.docs.map((doc) => {
-          const { board_id, board_name, last_edited, section_ids } =
-            doc.data();
+          const {
+            board_id,
+            board_name,
+            last_edited,
+            board_description,
+            board_due_date,
+            board_status,
+            section_ids,
+          } = doc.data();
           return {
             board_id,
             board_name,
             last_edited,
+            board_description,
+            board_due_date,
+            board_status,
+            board_bg_color: "",
             section_ids,
-           };
+          };
         });
         setBoards(boards);
       });
@@ -87,23 +102,23 @@ export default function Boards() {
   }, []);
 
   return (
-    <div className="flex flex-col w-full gap-12 mt-12 px-5 ">
+    <div className="mt-12 flex w-full flex-col gap-12 px-5">
       <p>보드 목록</p>
-      <section className="w-full min-h-[calc(100vh-56px)] grid grid-cols-4 gap-4 content-start ">
+      <section className="grid min-h-[calc(100vh-56px)] w-full grid-cols-4 content-start gap-4">
         {/* Create board */}
         <Popover>
           <PopoverTrigger>
-            <div className="w-full aspect-[5] rounded-xl flex justify-center items-center bg-zinc-700 text-white">
+            <div className="flex aspect-[5] w-full items-center justify-center rounded-xl bg-zinc-700 text-white">
               {/** on click popover  */}
               <p>Create board</p>
             </div>
           </PopoverTrigger>
           <PopoverContent
             side={"right"}
-            className="w-60 flex flex-col justify-start"
+            className="flex w-60 flex-col justify-start"
           >
-            <section className="flex flex-col gap-2 justify-center items-start w-full">
-              <header className="flex flex-row justify-between items-center w-full">
+            <section className="flex w-full flex-col items-start justify-center gap-2">
+              <header className="flex w-full flex-row items-center justify-between">
                 <h1>Create board</h1>
                 <PopoverClose>
                   <CloseIcon />
@@ -111,7 +126,7 @@ export default function Boards() {
               </header>
 
               <form
-                className="w-full flex flex-col gap-2"
+                className="flex w-full flex-col gap-2"
                 onSubmit={handleSubmit(onSubmit)}
               >
                 <Label htmlFor="boardName">Board title</Label>
@@ -131,7 +146,7 @@ export default function Boards() {
 
         {boards.map((board) => (
           <Link to={`/boards/${board.board_id}`}>
-            <div className="w-full aspect-[5] rounded-xl flex justify-center items-center bg-zinc-700 text-white">
+            <div className="flex aspect-[5] w-full items-center justify-center rounded-xl bg-zinc-700 text-white">
               {/** on click popover  */}
               <p>{board.board_name}</p>
             </div>

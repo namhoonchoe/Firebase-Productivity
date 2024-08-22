@@ -3,6 +3,8 @@ import { create } from "zustand";
 type Section = {
   section_name: string;
   section_id: string;
+  archived: boolean;
+
 };
 
 type Task = {
@@ -12,6 +14,8 @@ type Task = {
   description: string | null;
   start_date: string | null;
   due_date: string | null;
+  archived: boolean;
+
 };
 
 type TaskPayload = {
@@ -20,6 +24,7 @@ type TaskPayload = {
   description: string | null;
   startDate: string | null;
   dueDate: string | null;
+  archived: boolean;
 };
 
 /**인터페이스 타입에 주의 할 것 */
@@ -59,6 +64,7 @@ export const useKanbanStore = create<IKanbanStore>((set) => ({
         {
           section_name: sectionName,
           section_id: crypto.randomUUID(),
+          archived:false
         },
       ],
     })),
@@ -102,6 +108,7 @@ export const useKanbanStore = create<IKanbanStore>((set) => ({
           start_date: startDate,
           due_date: dueDate,
           section_id: sectionId,
+          archived:false
         },
       ],
     }));
