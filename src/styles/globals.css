@@ -13,6 +13,10 @@
     @apply flex justify-start items-center flex-grow-0 flex-shrink-0 w-[56px]  gap-6 p-4 rounded-xl text-white
   }
 
+  .popover-content {
+    @apply flex w-[272px] flex-col justify-start rounded-xl border border-transparent shadow-md p-0 bg-zinc-700 !important
+  }
+
   .popover-ul {
     @apply flex w-64 flex-shrink-0 flex-grow-0 flex-col items-center justify-start gap-3  px-2 py-3
   }

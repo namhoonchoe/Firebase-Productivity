@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/shadcn/input";
 import { useForm } from "react-hook-form";
 import AddCardForm from "./AddCardForm";
 import { Button } from "@/components/ui/shadcn/button";
+import { cn } from '@/lib/utils';
 
 type SectionProps = {
   sectionId: string;
@@ -85,7 +86,7 @@ export default function DraggableSection({
             <MoreIcon />
           </PopoverTrigger>
           <PopoverContent
-            className="flex w-[272px] flex-col justify-start rounded-xl border border-black bg-zinc-700 p-0"
+            className="popover-content"
             align="start"
           >
             <section className="flex w-full flex-col items-start justify-center gap-2 pb-2">

@@ -115,10 +115,10 @@ export default function Board() {
                 <ChevronDownIcon fill={iconColorDark} width={16} height={16} />
               </PopoverTrigger>
               <PopoverContent
-                className="flex w-[272px] flex-col justify-start rounded-xl border border-black bg-zinc-700 p-0"
+                className="popover-content"
                 align="start"
               >
-                <section className="flex w-full flex-col items-start justify-center gap-2 pb-2">
+                <section className="flex w-full flex-col items-start justify-center gap-2 pb-2  ">
                   <header className="flex w-full flex-row items-center justify-between border-0 border-b border-zinc-500 p-3">
                     <div className="relative h-4 w-[19px] flex-shrink-0 flex-grow-0 overflow-hidden" />
                     <p className="popover-text capitalize">
