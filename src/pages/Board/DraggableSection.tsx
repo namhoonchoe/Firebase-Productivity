@@ -13,6 +13,7 @@ import DraggableCard from "./DraggableCard";
 import { Input } from "@/components/ui/shadcn/input";
 import { useForm } from "react-hook-form";
 import AddCardForm from "./AddCardForm";
+import { Button } from "@/components/ui/shadcn/button";
 
 type SectionProps = {
   sectionId: string;
@@ -27,6 +28,8 @@ export default function DraggableSection({
   sectionName,
 }: SectionProps) {
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
+  const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
+
   const { taskList, editSection, deleteSection, createSection } =
     useKanbanStore();
 
@@ -34,12 +37,13 @@ export default function DraggableSection({
 
   const { register, handleSubmit, setValue } = useForm<FormInput>();
 
+  /* element scroll to the top */
+
   const toggleEditMode = () => setIsEditMode(!isEditMode);
+  const toggleFormOpen = () => setIsFormOpen(!isFormOpen);
 
   const handleValid = ({ sectionName }: FormInput) => {
     editSection(sectionId, sectionName);
-    console.log("form submitted");
-    console.log(sectionName);
     setValue("sectionName", "");
     setIsEditMode(false);
   };
@@ -178,12 +182,23 @@ export default function DraggableSection({
           </PopoverContent>
         </Popover>
       </header>
-      <main className="flex max-h-[60vh] w-full flex-col items-center justify-start gap-4 overflow-y-scroll">
-        {filteredList.map((task) => {
-          return <DraggableCard key={task.task_id} cardId={task.task_id} />;
-        })}
+      <main className="flex max-h-[60vh] w-full flex-col items-center justify-start gap-4 overflow-y-auto py-2">
+        {isFormOpen && (
+          <AddCardForm sectionId={sectionId} toggleFormOpen={toggleFormOpen} />
+        )}
+        <>
+          {filteredList.map((task) => {
+            return <DraggableCard key={task.task_id} cardId={task.task_id} />;
+          })}
+        </>
       </main>
-       <AddCardForm sectionId={sectionId}/>
+      <Button
+        className="flex min-h-12 w-72 flex-shrink-0 flex-grow-0 items-center justify-start gap-3 rounded-xl bg-zinc-900 capitalize text-white"
+        onClick={toggleFormOpen}
+      >
+        <AddIcon width={20} height={20} />
+        <p>add task here....</p>
+      </Button>
     </section>
   );
 }
