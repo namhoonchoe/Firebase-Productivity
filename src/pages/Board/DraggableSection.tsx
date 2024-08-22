@@ -14,7 +14,6 @@ import { Input } from "@/components/ui/shadcn/input";
 import { useForm } from "react-hook-form";
 import AddCardForm from "./AddCardForm";
 import { Button } from "@/components/ui/shadcn/button";
-import { cn } from '@/lib/utils';
 
 type SectionProps = {
   sectionId: string;
@@ -31,8 +30,12 @@ export default function DraggableSection({
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
 
-  const { taskList, editSection, deleteSection, createSection } =
+  const { taskList, editSection } =
     useKanbanStore();
+
+  const filteredList = taskList
+    .filter((task) => task.section_id === sectionId)
+    .filter((task) => !task.archived);
 
   const sectionNameRef = useRef<HTMLFormElement | null>(null);
 
@@ -50,8 +53,6 @@ export default function DraggableSection({
   };
 
   useOutsideClick({ ref: sectionNameRef, handler: () => setIsEditMode(false) });
-
-  const filteredList = taskList.filter((task) => task.section_id === sectionId);
 
   return (
     <section className="relative flex min-h-20 w-72 flex-shrink-0 flex-grow-0 flex-col items-center justify-start gap-3 overflow-hidden rounded-3xl bg-zinc-900 py-3">
@@ -85,10 +86,7 @@ export default function DraggableSection({
           <PopoverTrigger>
             <MoreIcon />
           </PopoverTrigger>
-          <PopoverContent
-            className="popover-content"
-            align="start"
-          >
+          <PopoverContent className="popover-content" align="start">
             <section className="flex w-full flex-col items-start justify-center gap-2 pb-2">
               <header className="flex w-full flex-row items-center justify-between border-0 border-b border-zinc-500 p-3">
                 <div className="relative h-4 w-[19px] flex-shrink-0 flex-grow-0 overflow-hidden" />
@@ -189,7 +187,7 @@ export default function DraggableSection({
         )}
         <>
           {filteredList.map((task) => {
-            return <DraggableCard key={task.task_id} cardId={task.task_id} />;
+            return <DraggableCard key={task.task_id} cardId={task.task_id} sectionName={sectionName} />;
           })}
         </>
       </main>

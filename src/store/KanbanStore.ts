@@ -4,7 +4,6 @@ type Section = {
   section_name: string;
   section_id: string;
   archived: boolean;
-
 };
 
 type Task = {
@@ -15,7 +14,6 @@ type Task = {
   start_date: string | null;
   due_date: string | null;
   archived: boolean;
-
 };
 
 type TaskPayload = {
@@ -39,11 +37,13 @@ interface IKanbanStore {
   createSection: (sectionName: string) => void;
   editSection: (targetId: string, newSectionName: string) => void;
   deleteSection: (targetId: string) => void;
-  clearSection: (targetId: string) => void;
+  clearSection: (targetSectionId: string) => void;
+  archiveSection: (targetId: string) => void;
 
   createTask: (payload: TaskPayload) => void;
   deleteTask: (targetId: string) => void;
   updateTask: (payload: TaskPayload, targetId: string) => void;
+  archiveTask: (targetId: string) => void;
 }
 
 export const useKanbanStore = create<IKanbanStore>((set) => ({
@@ -53,6 +53,7 @@ export const useKanbanStore = create<IKanbanStore>((set) => ({
   setSections: (sections: Section[]) => {
     set(() => ({ sections: [...sections] }));
   },
+
   setTaskList: (lists: Task[]) => {
     set(() => ({ taskList: [...lists] }));
   },
@@ -64,7 +65,7 @@ export const useKanbanStore = create<IKanbanStore>((set) => ({
         {
           section_name: sectionName,
           section_id: crypto.randomUUID(),
-          archived:false
+          archived: false,
         },
       ],
     })),
@@ -73,7 +74,7 @@ export const useKanbanStore = create<IKanbanStore>((set) => ({
     set((state) => ({
       sections: state.sections.map((section) => {
         if (section.section_id === targetId) {
-          return { ...section, section_name:newSectionName };
+          return { ...section, section_name: newSectionName };
         } else {
           return section;
         }
@@ -89,9 +90,27 @@ export const useKanbanStore = create<IKanbanStore>((set) => ({
     }));
   },
 
-  clearSection: (targetId: string) => {
+  clearSection: (targetSectionId: string) => {
     set((state) => ({
-      taskList: state.taskList.filter((task) => task.section_id !== targetId),
+      taskList: state.taskList.map((task) => {
+        if (task.section_id === targetSectionId) {
+          return { ...task, archived: true };
+        } else {
+          return task;
+        }
+      }),
+    }));
+  },
+
+  archiveSection: (targetId: string) => {
+    set((state) => ({
+      sections: state.sections.map((section) => {
+        if (section.section_id === targetId) {
+          return { ...section, archived: true };
+        } else {
+          return section;
+        }
+      }),
     }));
   },
 
@@ -108,7 +127,7 @@ export const useKanbanStore = create<IKanbanStore>((set) => ({
           start_date: startDate,
           due_date: dueDate,
           section_id: sectionId,
-          archived:false
+          archived: false,
         },
       ],
     }));
@@ -131,6 +150,18 @@ export const useKanbanStore = create<IKanbanStore>((set) => ({
       taskList: state.taskList.map((task) => {
         if (task.task_id === taskId) {
           return { ...task, ...payload };
+        } else {
+          return task;
+        }
+      }),
+    }));
+  },
+
+  archiveTask: (taskId: string) => {
+    set((state) => ({
+      taskList: state.taskList.map((task) => {
+        if (task.task_id === taskId) {
+          return { ...task, archived: true };
         } else {
           return task;
         }

@@ -17,6 +17,7 @@ import CloseIcon from "@/components/svgIcons/CloseIcon";
 import Kanban from "./Kanban";
 import { ChevronDownIcon } from "@/components/svgIcons";
 import { iconColorDark } from "@/utils/constants";
+import { useKanbanStore } from "@/store/KanbanStore";
 
 type FormInput = {
   boardName: string;
@@ -37,6 +38,10 @@ export default function Board() {
     section_ids: [],
     archived: false,
   });
+
+  const { taskList } = useKanbanStore();
+
+  const archivedList = taskList.filter((task) => task.archived);
 
   const toggleEdit = () => setIsEdit(!isEdit);
   const toggleIsCard = () => setIsCard(!isCard);
@@ -283,8 +288,19 @@ export default function Board() {
             </p>
           </div>
           {isCard ? (
-            <ul className="flex flex-col items-center justify-start">
+            <ul className="flex flex-col items-center justify-start gap-4 py-4">
               {/* archived cards */}
+              {archivedList.map((card) => {
+                return (
+                  <li>
+                    <div className="flex w-64 items-start justify-start rounded-xl bg-zinc-800 px-6 py-4">
+                      <p className="max-w-full break-all text-xl font-bold text-white">
+                        {card.task_title}
+                      </p>
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
           ) : (
             <ul className="flex flex-col items-center justify-start">
