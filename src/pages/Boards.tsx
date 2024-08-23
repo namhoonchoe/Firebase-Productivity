@@ -47,6 +47,7 @@ export default function Boards() {
         board_status: null,
         board_bg_color: "",
         section_ids: [],
+        archived:false
       } as BoardDocument);
       navigate(`/boards/${boardId}`);
     } catch (e) {

@@ -30,8 +30,7 @@ export default function DraggableSection({
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
 
-  const { taskList, editSection } =
-    useKanbanStore();
+  const { taskList, editSection } = useKanbanStore();
 
   const filteredList = taskList
     .filter((task) => task.section_id === sectionId)
@@ -55,8 +54,8 @@ export default function DraggableSection({
   useOutsideClick({ ref: sectionNameRef, handler: () => setIsEditMode(false) });
 
   return (
-    <section className="relative flex min-h-20 w-72 flex-shrink-0 flex-grow-0 flex-col items-center justify-start gap-3 overflow-hidden rounded-3xl bg-zinc-900 py-3">
-      <header className="flex h-16 w-full items-center justify-between rounded-t-xl px-4 py-3 text-white">
+    <section className="relative flex min-h-20 w-[272px] flex-shrink-0 flex-grow-0 flex-col items-center justify-start overflow-hidden rounded-md bg-zinc-900 py-3">
+      <header className="flex h-12 w-full items-center justify-between rounded-t-xl px-4  text-white">
         {/**section name */}
         {isEditMode ? (
           <form
@@ -66,7 +65,7 @@ export default function DraggableSection({
           >
             <Input
               id="section name"
-              className="rounde-xl h-12 w-56 border-slate-400 bg-zinc-700 pl-2 capitalize text-white"
+              className="h-9 w-52 rounded-md border-slate-400 bg-zinc-700 pl-2 normal-case text-white"
               placeholder="Please write a section name"
               {...register("sectionName", {
                 required: "Please write a section name",
@@ -75,7 +74,7 @@ export default function DraggableSection({
           </form>
         ) : (
           <p
-            className="px-2 text-base font-semibold capitalize"
+            className="px-2 text-base font-semibold normal-case"
             onClick={() => toggleEditMode()}
           >
             {sectionName}
@@ -90,7 +89,7 @@ export default function DraggableSection({
             <section className="flex w-full flex-col items-start justify-center gap-2 pb-2">
               <header className="flex w-full flex-row items-center justify-between border-0 border-b border-zinc-500 p-3">
                 <div className="relative h-4 w-[19px] flex-shrink-0 flex-grow-0 overflow-hidden" />
-                <p className="popover-text capitalize">actions</p>
+                <p className="popover-text normal-case">actions</p>
                 <PopoverClose>
                   <CloseIcon width={16} height={16} />
                 </PopoverClose>
@@ -170,10 +169,7 @@ export default function DraggableSection({
                         fill="white"
                       />
                     </svg>
-                    <p className="popover-text">
-                      {" "}
-                      archive all tasks in this list
-                    </p>
+                    <p className="popover-text">archive all tasks in section</p>
                   </li>
                 </ul>
               </div>
@@ -181,18 +177,24 @@ export default function DraggableSection({
           </PopoverContent>
         </Popover>
       </header>
-      <main className="flex max-h-[60vh] w-full flex-col items-center justify-start gap-4 overflow-y-auto py-2">
+      <main className="flex max-h-[60vh] w-full flex-col items-center justify-start overflow-y-auto py-2">
         {isFormOpen && (
           <AddCardForm sectionId={sectionId} toggleFormOpen={toggleFormOpen} />
         )}
         <>
           {filteredList.map((task) => {
-            return <DraggableCard key={task.task_id} cardId={task.task_id} sectionName={sectionName} />;
+            return (
+              <DraggableCard
+                key={task.task_id}
+                cardId={task.task_id}
+                sectionName={sectionName}
+              />
+            );
           })}
         </>
       </main>
       <Button
-        className="flex min-h-12 w-72 flex-shrink-0 flex-grow-0 items-center justify-start gap-3 rounded-xl bg-zinc-900 capitalize text-white"
+        className="flex h-10 w-64 flex-shrink-0 flex-grow-0 items-center justify-start gap-3 rounded-md bg-zinc-900 normal-case text-white"
         onClick={toggleFormOpen}
       >
         <AddIcon width={20} height={20} />

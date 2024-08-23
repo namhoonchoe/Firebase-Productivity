@@ -4,29 +4,29 @@
 
 @layer components {
   .fit-center {
-    @apply flex flex-col m-0 justify-start items-center w-full absolute left-1/2 -translate-x-1/2 min-h-dvh;
+    @apply absolute left-1/2 m-0 flex min-h-dvh w-full -translate-x-1/2 flex-col items-center justify-start box-border	;
   }
   .nav-button {
-    @apply flex justify-start items-center flex-grow-0 flex-shrink-0 w-[196px]  gap-6 p-4 rounded-xl text-white
+    @apply flex w-[196px] flex-shrink-0 flex-grow-0 items-center justify-start gap-6 rounded-xl p-4 text-white;
   }
   .nav-button-shrinked {
-    @apply flex justify-start items-center flex-grow-0 flex-shrink-0 w-[56px]  gap-6 p-4 rounded-xl text-white
+    @apply flex w-[56px] flex-shrink-0 flex-grow-0 items-center justify-start gap-6 rounded-xl p-4 text-white;
   }
 
   .popover-content {
-    @apply flex w-[272px] flex-col justify-start rounded-xl border border-transparent shadow-md p-0 bg-zinc-700 !important
+    @apply flex w-[272px] flex-col justify-start rounded-xl border border-transparent bg-zinc-700 p-0 shadow-md !important;
   }
 
   .popover-ul {
-    @apply flex w-64 flex-shrink-0 flex-grow-0 flex-col items-center justify-start gap-3  px-2 py-3
+    @apply flex w-64 flex-col items-center justify-start gap-3 px-2 py-3;
   }
 
   .popover-item {
-    @apply   flex w-60 flex-shrink-0 flex-grow-0 items-center justify-start gap-3   hover:bg-zinc-900 px-2 py-1 rounded-xl
+    @apply flex w-60 items-center justify-start gap-3 rounded-xl px-2 py-1 hover:bg-zinc-900;
   }
 
   .popover-text {
-    @apply flex-shrink-0 flex-grow-0 text-center   text-white
+    @apply flex-shrink-0 flex-grow-0 text-center text-white;
   }
 }
 
@@ -35,18 +35,18 @@
     display: grid;
     grid-template-columns: fit-content(224px) 1fr;
     grid-template-areas:
-    "header header"
-    "sidebar main"
-    "sidebar main";
+      "header header"
+      "sidebar main"
+      "sidebar main";
   }
 
   .layout-grid-shrinked {
     display: grid;
     grid-template-columns: fit-content(64px) 1fr;
     grid-template-areas:
-    "header header"
-    "sidebar main"
-    "sidebar main";
+      "header header"
+      "sidebar main"
+      "sidebar main";
   }
 
   .grid-header {
@@ -54,16 +54,13 @@
   }
 
   .grid-side-bar {
-      grid-area: sidebar;
-      
+    grid-area: sidebar;
   }
 
   .grid-main {
     grid-area: main;
   }
 
-
-  
   .nav-slider {
     display: inline-flex;
     overflow-x: scroll;

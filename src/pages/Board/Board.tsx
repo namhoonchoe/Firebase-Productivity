@@ -320,6 +320,7 @@ export default function Board() {
                         </p>
                       </div>
                       <div>
+                        {/* delete task */}
                         <p
                           className="text-md flex items-center gap-3 rounded-xl px-3 py-2 capitalize hover:bg-zinc-900"
                           onClick={() => deleteTask(card.task_id)}

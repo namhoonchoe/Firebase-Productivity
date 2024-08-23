@@ -44,17 +44,17 @@ export default function AddCardForm({
       id="cardName"
       ref={taskFormRef}
       onSubmit={handleSubmit(handleValid)}
-      className="my-2 p-2 flex w-64 flex-shrink-0 flex-grow-0 flex-col items-start gap-3 overflow-hidden rounded-xl bg-zinc-900"
+      className="flex w-64 flex-col gap-3 rounded-md bg-zinc-900 p-2"
     >
       <Input
-        className="flex aspect-[3]  w-60 flex-shrink-0 flex-grow-0 items-center   rounded-xl border-slate-400 bg-zinc-700 pl-2 capitalize text-white"
+        className="flex aspect-[3] w-60 flex-shrink-0 flex-grow-0 items-center rounded-md border-slate-400 bg-zinc-700 normal-case text-white"
         placeholder="Please write a card name"
         {...register("cardName", {
           required: "Please write a card name",
         })}
       />
-      <Button className="flex flex-shrink-0 flex-grow-0 items-center justify-start rounded-lg bg-emerald-600 capitalize text-white hover:bg-emerald-400">
-        <p>add card </p>
+      <Button className="flex w-full flex-shrink-0 flex-grow-0 items-center justify-center rounded-md bg-emerald-600 normal-case text-white hover:bg-emerald-400">
+        <p>create task </p>
       </Button>
     </form>
   );

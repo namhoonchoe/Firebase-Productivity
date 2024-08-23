@@ -25,7 +25,7 @@ export default function DraggableCard({
   return (
     <Dialog>
       <DialogTrigger>
-        <div className="flex w-64 items-start justify-start rounded-xl bg-zinc-700 px-6 py-4">
+        <div className="flex w-64 items-start justify-start rounded-xl bg-zinc-700 px-6 py-4 mb-3">
           <p className="max-w-full break-all text-xl font-bold text-white">
             {task_title}
           </p>

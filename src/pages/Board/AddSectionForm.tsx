@@ -1,16 +1,21 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/shadcn/button";
 import { Label } from "@/components/ui/shadcn/label";
 import { Input } from "@/components/ui/shadcn/input";
 import { useForm } from "react-hook-form";
 import { useKanbanStore } from "@/store/KanbanStore";
-import CloseIcon from "@/components/svgIcons/CloseIcon";
 import { AddIcon } from "@/components/svgIcons";
+import { useOutsideClick } from "@/hooks/useOutsideClick";
 
 export default function AddSectionForm() {
-  const [isAdding, setIsAdding] = useState<boolean>(false);
+  const [isAddMode, setIsAddMode] = useState<boolean>(false);
+  const toggleAddMode = () => setIsAddMode(!isAddMode);
+  const addFormRef = useRef<HTMLFormElement | null>(null);
+
   const { register, handleSubmit, setValue } = useForm<FormInput>();
   const { createSection } = useKanbanStore();
+
+  useOutsideClick({ ref: addFormRef, handler: () => toggleAddMode() });
 
   type FormInput = {
     sectionName: string;
@@ -19,16 +24,17 @@ export default function AddSectionForm() {
   const handleValid = ({ sectionName }: FormInput) => {
     createSection(sectionName);
     setValue("sectionName", "");
-    setIsAdding(false);
+    toggleAddMode();
   };
 
   return (
     <>
-      {isAdding ? (
-        <section className="flex w-72 flex-shrink-0 flex-grow-0 flex-col items-start justify-start overflow-hidden rounded-xl bg-zinc-900">
+      {isAddMode ? (
+        <section className="flex w-72 flex-shrink-0 flex-grow-0 flex-col items-start justify-start gap-3 overflow-hidden rounded-xl bg-zinc-900">
           <form
             onSubmit={handleSubmit(handleValid)}
             className="flex w-full flex-col items-start justify-start gap-3 px-3 py-4"
+            ref={addFormRef}
           >
             <Label
               className="text-lg font-semibold text-white"
@@ -38,29 +44,21 @@ export default function AddSectionForm() {
             </Label>
             <Input
               id="section name"
-              className="rounde-xl h-12 w-full border-slate-400 bg-gray-900 pl-2 capitalize text-white"
+              className="h-12 w-full rounded-md border-slate-400 bg-zinc-900 pl-2 text-white"
               placeholder="Please write a section name"
               {...register("sectionName", {
                 required: "Please write a section name",
               })}
             />
-            <div className="flex items-center justify-start gap-2">
-              <Button className="flex flex-shrink-0 flex-grow-0 items-center justify-start rounded-lg bg-emerald-600 capitalize text-white hover:bg-emerald-400">
-                <p>add section </p>
-              </Button>
-              <Button
-                className="hover:bg-zinc-600"
-                onClick={() => setIsAdding(!isAdding)}
-              >
-                <CloseIcon />
-              </Button>
-            </div>
+            <Button className="flex w-full flex-shrink-0 flex-grow-0 items-center justify-center rounded-md bg-emerald-600 text-white hover:bg-emerald-400">
+              <p>add section </p>
+            </Button>
           </form>
         </section>
       ) : (
         <Button
-          className="flex min-h-12 w-72 flex-shrink-0 flex-grow-0 items-center justify-start gap-3 rounded-xl bg-zinc-900 capitalize text-white"
-          onClick={() => setIsAdding(!isAdding)}
+          className="flex min-h-12 w-64 flex-shrink-0 flex-grow-0 items-center justify-start gap-3 rounded-md bg-zinc-900 text-white"
+          onClick={() => toggleAddMode()}
         >
           <AddIcon />
           <p>add section </p>
