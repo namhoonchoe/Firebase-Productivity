@@ -28,11 +28,11 @@ export default function AddCardForm({
 
   const handleValid = ({ cardName }: FormInput) => {
     createTask({
-      sectionId: sectionId,
-      title: cardName,
+      section_id: sectionId,
+      task_title: cardName,
       description: "",
-      startDate: null,
-      dueDate: null,
+      start_date: null,
+      due_date: null,
       archived: false,
     });
     setValue("cardName", "");

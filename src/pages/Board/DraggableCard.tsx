@@ -18,9 +18,10 @@ export default function DraggableCard({
   cardId: string;
   sectionName: string;
 }) {
-  const { taskList, archiveTask } = useKanbanStore();
+  const { taskList, updateTask } = useKanbanStore();
   const [task] = taskList.filter((task) => task.task_id === cardId);
-  const { task_title } = task;
+   const { task_id: targetId, ...payload } = task;
+   const { task_title } = payload;
   return (
     <Dialog>
       <DialogTrigger>
@@ -44,7 +45,10 @@ export default function DraggableCard({
           <Button
             type="button"
             className="bg-red-600"
-            onClick={() => archiveTask(cardId)}
+            onClick={() => updateTask(
+              { ...payload, archived: true },
+              targetId,
+            )}
           >
             Archive this task
           </Button>

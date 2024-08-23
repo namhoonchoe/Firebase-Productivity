@@ -17,11 +17,11 @@ type Task = {
 };
 
 type TaskPayload = {
-  title: string;
-  sectionId: string;
+  task_title: string;
+  section_id: string;
   description: string | null;
-  startDate: string | null;
-  dueDate: string | null;
+  start_date: string | null;
+  due_date: string | null;
   archived: boolean;
 };
 
@@ -43,8 +43,7 @@ interface IKanbanStore {
   createTask: (payload: TaskPayload) => void;
   deleteTask: (targetId: string) => void;
   updateTask: (payload: TaskPayload, targetId: string) => void;
-  archiveTask: (targetId: string) => void;
-}
+ }
 
 export const useKanbanStore = create<IKanbanStore>((set) => ({
   sections: [],
@@ -115,18 +114,13 @@ export const useKanbanStore = create<IKanbanStore>((set) => ({
   },
 
   createTask: (payload: TaskPayload) => {
-    const { title, description, startDate, dueDate, sectionId } = payload;
-
+ 
     set((state) => ({
       taskList: [
         ...state.taskList,
         {
+          ...payload,
           task_id: crypto.randomUUID(),
-          task_title: title,
-          description: description,
-          start_date: startDate,
-          due_date: dueDate,
-          section_id: sectionId,
           archived: false,
         },
       ],
@@ -145,7 +139,7 @@ export const useKanbanStore = create<IKanbanStore>((set) => ({
    *
    */
 
-  updateTask: (payload: TaskPayload, taskId: string) => {
+  updateTask: (payload: TaskPayload, taskId: string) => {   
     set((state) => ({
       taskList: state.taskList.map((task) => {
         if (task.task_id === taskId) {
@@ -157,15 +151,5 @@ export const useKanbanStore = create<IKanbanStore>((set) => ({
     }));
   },
 
-  archiveTask: (taskId: string) => {
-    set((state) => ({
-      taskList: state.taskList.map((task) => {
-        if (task.task_id === taskId) {
-          return { ...task, archived: true };
-        } else {
-          return task;
-        }
-      }),
-    }));
-  },
+   
 }));

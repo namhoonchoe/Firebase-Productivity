@@ -18,6 +18,8 @@ import Kanban from "./Kanban";
 import { ChevronDownIcon } from "@/components/svgIcons";
 import { iconColorDark } from "@/utils/constants";
 import { useKanbanStore } from "@/store/KanbanStore";
+import RestoreIcon from "@/components/svgIcons/RestoreIcon";
+import DeleteIcon from "@/components/svgIcons/DeleteIcon";
 
 type FormInput = {
   boardName: string;
@@ -39,7 +41,7 @@ export default function Board() {
     archived: false,
   });
 
-  const { taskList } = useKanbanStore();
+  const { taskList, sections, deleteTask, updateTask } = useKanbanStore();
 
   const archivedList = taskList.filter((task) => task.archived);
 
@@ -220,7 +222,7 @@ export default function Board() {
                             <p className="popover-text">archive this board</p>
                           </li>
                           <label
-                            className="drawer-button popover-ul"
+                            className="popover-ul drawer-button"
                             htmlFor="my-drawer-4"
                           >
                             <li className="popover-item">
@@ -260,7 +262,7 @@ export default function Board() {
           aria-label="close sidebar"
           className="drawer-overlay"
         ></label>
-        <section className="menu text-base-content min-h-full w-80 bg-zinc-700 p-4">
+        <section className="menu min-h-full w-80 bg-zinc-700 p-4 text-base-content">
           {/* Sidebar content here */}
           <header className="relative mb-3 flex w-full flex-row items-center justify-center border-0 border-b border-zinc-500 pb-3">
             <p className="text-xl font-medium capitalize text-white">
@@ -291,14 +293,43 @@ export default function Board() {
             <ul className="flex flex-col items-center justify-start gap-4 py-4">
               {/* archived cards */}
               {archivedList.map((card) => {
+                const [section] = sections.filter(
+                  (section) => section.section_id === card.section_id,
+                );
+                const { task_id: targetId, ...payload } = card;
                 return (
-                  <li>
-                    <div className="flex w-64 items-start justify-start rounded-xl bg-zinc-800 px-6 py-4">
-                      <p className="max-w-full break-all text-xl font-bold text-white">
-                        {card.task_title}
+                  <section className="flex w-64 flex-col items-start justify-start gap-3">
+                    <div className="w-full rounded-xl bg-zinc-800 px-6 py-4">
+                      <p className="max-w-full break-all text-lg font-semibold text-white">
+                        {card.task_title} in {section.section_name}
                       </p>
                     </div>
-                  </li>
+                    <div className="flex flex-row items-center justify-start gap-3 pl-2 text-white">
+                      <div>
+                        {/* restore task */}
+                        <p
+                          className="text-md flex items-center gap-3 rounded-xl px-3 py-2 capitalize hover:bg-zinc-900"
+                          onClick={() =>
+                            updateTask(
+                              { ...payload, archived: false },
+                              targetId,
+                            )
+                          }
+                        >
+                          <RestoreIcon /> restore
+                        </p>
+                      </div>
+                      <div>
+                        <p
+                          className="text-md flex items-center gap-3 rounded-xl px-3 py-2 capitalize hover:bg-zinc-900"
+                          onClick={() => deleteTask(card.task_id)}
+                        >
+                          <DeleteIcon />
+                          delete
+                        </p>
+                      </div>
+                    </div>
+                  </section>
                 );
               })}
             </ul>
