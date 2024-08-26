@@ -5,6 +5,7 @@ import { useOutsideClick } from "@/hooks/useOutsideClick";
 
 import { Button } from "@/components/ui/shadcn/button";
 import { Input } from "@/components/ui/shadcn/input";
+
 type FormInput = {
   cardName: string;
 };
@@ -31,8 +32,8 @@ export default function AddCardForm({
       section_id: sectionId,
       task_title: cardName,
       description: "",
-      start_date: null,
-      due_date: null,
+      start_date: undefined,
+      due_date: undefined,
       archived: false,
     });
     setValue("cardName", "");

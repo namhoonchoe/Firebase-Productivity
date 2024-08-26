@@ -6,6 +6,8 @@
   ],
   "compilerOptions": {
     "declaration": true,
+    "strict": true,
+
     "emitDeclarationOnly": true,
     "outDir": "dist",
     "baseUrl": ".",

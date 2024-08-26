@@ -10,6 +10,9 @@ export { default as PersonIcon } from './PersonIcon';
 export { default as SearchIcon } from './SearchIcon';
 export { default as TimerIcon } from './TimerIcon';
 export { default as ChevronDownIcon } from './ChevronDownIcon';
+export { default as DeleteIcon } from './DeleteIcon';
+export { default as RestoreIcon } from './RestoreIcon';
+export { default as CalendarIcon } from './CalendarIcon';
 
 
  

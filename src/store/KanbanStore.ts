@@ -10,18 +10,18 @@ type Task = {
   task_id: string;
   section_id: string;
   task_title: string;
-  description: string | null;
-  start_date: string | null;
-  due_date: string | null;
+  description: string | undefined;
+  start_date: Date | undefined;
+  due_date: Date | undefined;
   archived: boolean;
 };
 
 type TaskPayload = {
   task_title: string;
   section_id: string;
-  description: string | null;
-  start_date: string | null;
-  due_date: string | null;
+  description: string | undefined;
+  start_date: Date | undefined;
+  due_date: Date | undefined;
   archived: boolean;
 };
 

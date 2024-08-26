@@ -8,7 +8,7 @@ export default function Kanban() {
   const alivedSections = sections.filter((section) =>!section.archived)
 
   return (
-    <div className="flex h-full w-full items-start justify-start gap-20 overflow-auto bg-transparent py-6 pl-5">
+    <div className="flex h-full w-full items-start justify-start gap-20 overflow-auto bg-transparent py-6 px-5">
       {alivedSections && alivedSections.map((section) => <DraggableSection sectionName={section.section_name} sectionId={section.section_id}  key={section.section_id}/>)}
       <AddSectionForm />
     </div>

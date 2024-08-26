@@ -25,9 +25,9 @@ export enum BoardStatus {
 export type BoardDocument = {
   board_id: string;
   board_name: string;
-  board_description: string|null;
-  board_due_date: string|null;
-  board_status: BoardStatus|null;
+  board_description: string|undefined;
+  board_due_date: Date|undefined;
+  board_status: BoardStatus|undefined;
   board_bg_color: string;
   last_edited: string;
   section_ids: string [];
@@ -43,9 +43,9 @@ export type SectionDocument = {
 export type TaskDocument = {
   task_id: string;
   section_id: string;
-  start_date: string | null;
-  due_date: string | null;
+  start_date: Date | undefined;
+  due_date: Date | undefined;
   task: string;
-  description: string | null;
+  description: string | undefined;
   archived: boolean;
 };

@@ -177,7 +177,7 @@ export default function DraggableSection({
           </PopoverContent>
         </Popover>
       </header>
-      <main className="flex max-h-[60vh] w-full flex-col items-center justify-start overflow-y-auto py-2">
+      <main className="flex max-h-[60vh] w-full flex-col items-center justify-start overflow-y-auto py-2 gap-3">
         {isFormOpen && (
           <AddCardForm sectionId={sectionId} toggleFormOpen={toggleFormOpen} />
         )}
