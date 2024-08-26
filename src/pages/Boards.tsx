@@ -42,9 +42,9 @@ export default function Boards() {
         board_id: boardId,
         board_name: boardName,
         last_edited: Date.now().toString(),
-        board_description: null,
-        board_due_date: null,
-        board_status: null,
+        board_description: "",
+        board_due_date: undefined,
+        board_status:  undefined,
         board_bg_color: "",
         section_ids: [],
         archived:false

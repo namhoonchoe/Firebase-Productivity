@@ -29,8 +29,10 @@ export default function DraggableSection({
 }: SectionProps) {
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
+  const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
 
-  const { taskList, editSection } = useKanbanStore();
+  const { taskList, updateTask, editSection, archiveSection } =
+    useKanbanStore();
 
   const filteredList = taskList
     .filter((task) => task.section_id === sectionId)
@@ -44,6 +46,7 @@ export default function DraggableSection({
 
   const toggleEditMode = () => setIsEditMode(!isEditMode);
   const toggleFormOpen = () => setIsFormOpen(!isFormOpen);
+  const toggleIsPopoverOpen = () => setIsPopoverOpen(!isPopoverOpen);
 
   const handleValid = ({ sectionName }: FormInput) => {
     editSection(sectionId, sectionName);
@@ -55,7 +58,7 @@ export default function DraggableSection({
 
   return (
     <section className="relative flex min-h-20 w-[272px] flex-shrink-0 flex-grow-0 flex-col items-center justify-start overflow-hidden rounded-md bg-zinc-900 py-3">
-      <header className="flex h-12 w-full items-center justify-between rounded-t-xl px-4  text-white">
+      <header className="flex h-12 w-full items-center justify-between rounded-t-xl px-4 text-white">
         {/**section name */}
         {isEditMode ? (
           <form
@@ -81,7 +84,10 @@ export default function DraggableSection({
           </p>
         )}
         {/* section menu*/}
-        <Popover>
+        <Popover
+          open={isPopoverOpen}
+          onOpenChange={() => toggleIsPopoverOpen()}
+        >
           <PopoverTrigger>
             <MoreIcon />
           </PopoverTrigger>
@@ -115,7 +121,15 @@ export default function DraggableSection({
                         fill="white"
                       />
                     </svg>
-                    <p className="popover-text">edit section name</p>
+                    <p
+                      className="popover-text"
+                      onClick={() => {
+                        toggleEditMode();
+                        toggleIsPopoverOpen();
+                      }}
+                    >
+                      edit section name
+                    </p>
                   </li>
                   <li className="popover-item">
                     <svg
@@ -137,7 +151,10 @@ export default function DraggableSection({
                   </li>
                 </ul>
                 <ul className="popover-ul">
-                  <li className="popover-item">
+                  <li
+                    className="popover-item"
+                    onClick={() => archiveSection(sectionId)}
+                  >
                     <svg
                       width={24}
                       height={24}
@@ -169,7 +186,18 @@ export default function DraggableSection({
                         fill="white"
                       />
                     </svg>
-                    <p className="popover-text">archive all tasks in section</p>
+                    <p
+                      className="popover-text"
+                      onClick={() => {
+                        filteredList.map((task) => {
+                          const { task_id,  ...payload } = task;
+                           updateTask({ ...payload, archived: true }, task_id);
+                        });
+                        toggleIsPopoverOpen();
+                      }}
+                    >
+                      archive all tasks in section
+                    </p>
                   </li>
                 </ul>
               </div>
@@ -177,7 +205,7 @@ export default function DraggableSection({
           </PopoverContent>
         </Popover>
       </header>
-      <main className="flex max-h-[60vh] w-full flex-col items-center justify-start overflow-y-auto py-2 gap-3">
+      <main className="flex max-h-[60vh] w-full flex-col items-center justify-start gap-3 overflow-y-auto py-2">
         {isFormOpen && (
           <AddCardForm sectionId={sectionId} toggleFormOpen={toggleFormOpen} />
         )}

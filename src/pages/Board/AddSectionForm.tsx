@@ -30,7 +30,7 @@ export default function AddSectionForm() {
   return (
     <>
       {isAddMode ? (
-        <section className="flex w-72 flex-shrink-0 flex-grow-0 flex-col items-start justify-start gap-3 overflow-hidden rounded-xl bg-zinc-900">
+        <section className="flex w-72 flex-shrink-0 flex-grow-0 flex-col items-start justify-start gap-3 overflow-hidden rounded-md bg-zinc-900">
           <form
             onSubmit={handleSubmit(handleValid)}
             className="flex w-full flex-col items-start justify-start gap-3 px-3 py-4"
@@ -51,7 +51,7 @@ export default function AddSectionForm() {
               })}
             />
             <Button className="flex w-full flex-shrink-0 flex-grow-0 items-center justify-center rounded-md bg-emerald-600 text-white hover:bg-emerald-400">
-              <p>add section </p>
+              <p>Add section </p>
             </Button>
           </form>
         </section>
@@ -61,7 +61,7 @@ export default function AddSectionForm() {
           onClick={() => toggleAddMode()}
         >
           <AddIcon />
-          <p>add section </p>
+          <p>Add section </p>
         </Button>
       )}
     </>
