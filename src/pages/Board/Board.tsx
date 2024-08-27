@@ -39,9 +39,9 @@ export default function Board() {
   const [boardState, setBoardState] = useState<BoardDocument>({
     board_id: "",
     board_name: "",
-    board_description: null,
-    board_due_date: null,
-    board_status: null,
+    board_description: "",
+    board_due_date: undefined,
+    board_status: undefined,
     board_bg_color: "",
     last_edited: "",
     section_ids: [],

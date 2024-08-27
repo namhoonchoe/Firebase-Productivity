@@ -67,7 +67,8 @@ export default function DraggableCard({
   });
 
   const submitHandler = (data: z.infer<typeof FormSchema>) => {
-    updateTask({ ...payload, ...data }, task_id);
+    const { task_id, ...payload } = task;
+    updateTask({ ...payload, ...data}, task_id);
     console.log("summit successfully")
   };
 
