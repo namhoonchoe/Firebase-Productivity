@@ -69,6 +69,7 @@ export default function Boards() {
     const boardId = crypto.randomUUID();
     try {
       await setDoc(doc(db, "boards", boardId), {
+        user_id: user?.uid,
         board_id: boardId,
         board_name: boardName,
         last_edited: format(Date.now(), "PPP"),
@@ -113,6 +114,7 @@ export default function Boards() {
       unsubscribe = await onSnapshot(boardsQuery, (snapshot) => {
         const boards = snapshot.docs.map((doc) => {
           const {
+            user_id,
             board_id,
             board_name,
             last_edited,
@@ -123,6 +125,7 @@ export default function Boards() {
             archived,
           } = doc.data();
           return {
+            user_id,
             board_id,
             board_name,
             last_edited,
@@ -137,6 +140,7 @@ export default function Boards() {
         setBoards(boards);
       });
     };
+
     if (user) {
       getBoards(user.uid);
     }
