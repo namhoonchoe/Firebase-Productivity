@@ -31,8 +31,7 @@ export default function DraggableSection({
   const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
 
-  const { taskList, updateTask, editSection, archiveSection } =
-    useKanbanStore();
+  const { taskList, updateTask, updateSection } = useKanbanStore();
 
   const filteredList = taskList
     .filter((task) => task.section_id === sectionId)
@@ -49,7 +48,10 @@ export default function DraggableSection({
   const toggleIsPopoverOpen = () => setIsPopoverOpen(!isPopoverOpen);
 
   const handleValid = ({ sectionName }: FormInput) => {
-    editSection(sectionId, sectionName);
+    updateSection(sectionId, {
+      section_name: sectionName,
+      archived: false,
+    });
     setValue("sectionName", "");
     setIsEditMode(false);
   };
@@ -153,7 +155,13 @@ export default function DraggableSection({
                 <ul className="popover-ul">
                   <li
                     className="popover-item"
-                    onClick={() => archiveSection(sectionId)}
+                    onClick={() => {
+                      updateSection(sectionId, {
+                        section_name: sectionName,
+                        archived: true,
+                      });
+                      toggleIsPopoverOpen();
+                    }}
                   >
                     <svg
                       width={24}
@@ -190,8 +198,8 @@ export default function DraggableSection({
                       className="popover-text"
                       onClick={() => {
                         filteredList.map((task) => {
-                          const { task_id,  ...payload } = task;
-                           updateTask({ ...payload, archived: true }, task_id);
+                          const { task_id, ...payload } = task;
+                          updateTask({ ...payload, archived: true }, task_id);
                         });
                         toggleIsPopoverOpen();
                       }}

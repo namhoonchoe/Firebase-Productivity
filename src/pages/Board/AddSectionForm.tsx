@@ -30,7 +30,7 @@ export default function AddSectionForm() {
   return (
     <>
       {isAddMode ? (
-        <section className="flex w-72 flex-shrink-0 flex-grow-0 flex-col items-start justify-start gap-3 overflow-hidden rounded-md bg-zinc-900">
+        <section className="flex w-64 flex-shrink-0 flex-grow-0 flex-col items-start justify-start gap-3 overflow-hidden rounded-md bg-zinc-900">
           <form
             onSubmit={handleSubmit(handleValid)}
             className="flex w-full flex-col items-start justify-start gap-3 px-3 py-4"

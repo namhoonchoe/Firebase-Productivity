@@ -23,6 +23,7 @@ export enum BoardStatus {
 }
 
 export type BoardDocument = {
+  user_id: string;
   board_id: string;
   board_name: string;
   board_description: string   ;

@@ -25,6 +25,11 @@ type TaskPayload = {
   archived: boolean;
 };
 
+type SectionPayload = {
+  section_name: string;
+  archived: boolean;
+};
+
 /**인터페이스 타입에 주의 할 것 */
 
 interface IKanbanStore {
@@ -35,15 +40,15 @@ interface IKanbanStore {
   setTaskList: (lists: Task[]) => void;
 
   createSection: (sectionName: string) => void;
-  editSection: (targetId: string, newSectionName: string) => void;
-  deleteSection: (targetId: string) => void;
+  updateSection:(targetId: string, payload: SectionPayload) => void;
+   deleteSection: (targetId: string) => void;
   clearSection: (targetSectionId: string) => void;
-  archiveSection: (targetId: string) => void;
+ 
 
   createTask: (payload: TaskPayload) => void;
   deleteTask: (targetId: string) => void;
   updateTask: (payload: TaskPayload, targetId: string) => void;
- }
+}
 
 export const useKanbanStore = create<IKanbanStore>((set) => ({
   sections: [],
@@ -69,17 +74,18 @@ export const useKanbanStore = create<IKanbanStore>((set) => ({
       ],
     })),
 
-  editSection: (targetId: string, newSectionName: string) => {
+  updateSection: (targetId: string, payload: SectionPayload) => {
     set((state) => ({
       sections: state.sections.map((section) => {
         if (section.section_id === targetId) {
-          return { ...section, section_name: newSectionName };
+          return { ...section, ...payload };
         } else {
           return section;
         }
       }),
     }));
   },
+ 
 
   deleteSection: (targetId: string) => {
     set((state) => ({
@@ -101,20 +107,7 @@ export const useKanbanStore = create<IKanbanStore>((set) => ({
     }));
   },
 
-  archiveSection: (targetId: string) => {
-    set((state) => ({
-      sections: state.sections.map((section) => {
-        if (section.section_id === targetId) {
-          return { ...section, archived: true };
-        } else {
-          return section;
-        }
-      }),
-    }));
-  },
-
   createTask: (payload: TaskPayload) => {
- 
     set((state) => ({
       taskList: [
         ...state.taskList,
@@ -139,7 +132,7 @@ export const useKanbanStore = create<IKanbanStore>((set) => ({
    *
    */
 
-  updateTask: (payload: TaskPayload, taskId: string) => {   
+  updateTask: (payload: TaskPayload, taskId: string) => {
     set((state) => ({
       taskList: state.taskList.map((task) => {
         if (task.task_id === taskId) {
@@ -150,6 +143,4 @@ export const useKanbanStore = create<IKanbanStore>((set) => ({
       }),
     }));
   },
-
-   
 }));
