@@ -23,6 +23,7 @@ type SectionProps = {
 type FormInput = {
   sectionName: string;
 };
+
 export default function DraggableSection({
   sectionId,
   sectionName,

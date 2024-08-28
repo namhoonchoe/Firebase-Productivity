@@ -12,7 +12,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/shadcn/popover";
 import { PopoverClose } from "@radix-ui/react-popover";
-import * as SheetPrimitive from "@radix-ui/react-dialog"
+import * as SheetPrimitive from "@radix-ui/react-dialog";
 import { useOutsideClick } from "@/hooks/useOutsideClick";
 import Kanban from "./Kanban";
 import {
@@ -43,13 +43,16 @@ import {
   TabsTrigger,
 } from "@/components/ui/shadcn/tabs";
 
+import { colors } from "@/utils/constants";
+
 type FormInput = {
-  boardName: string;
+  boardName?: string;
+  bgColor?: string;
 };
 
 export default function Board() {
   const [isEdit, setIsEdit] = useState<boolean>(false);
- 
+
   const [boardState, setBoardState] = useState<BoardDocument>({
     user_id: "",
     board_id: "",
@@ -63,20 +66,27 @@ export default function Board() {
     archived: false,
   });
 
-  const { taskList, sections, deleteTask, updateTask, deleteSection, updateSection } = useKanbanStore();
+  const {
+    taskList,
+    sections,
+    deleteTask,
+    updateTask,
+    deleteSection,
+    updateSection,
+  } = useKanbanStore();
 
   const archivedList = taskList.filter((task) => task.archived);
-  const archivedSections = sections.filter((section) => section.archived)
+  const archivedSections = sections.filter((section) => section.archived);
 
   const toggleEdit = () => setIsEdit(!isEdit);
- 
+
   const { boardId } = useParams();
   const { register, handleSubmit } = useForm<FormInput>();
   const boardNameRef = useRef<HTMLFormElement | null>(null);
 
   useOutsideClick({ ref: boardNameRef, handler: toggleEdit });
 
-  const editBoardName = async (boardName: string) => {
+  const editBoardName = async (boardName: string | undefined) => {
     /** 타입 맟추기용 꼼수 template literal */
     await updateDoc(doc(db, "boards", `${boardState.board_id}`), {
       board_name: boardName,
@@ -88,10 +98,16 @@ export default function Board() {
     editBoardName(boardName);
   };
 
-  /*   const deleteBoard = async () => {
-    await deleteDoc(doc(db, "boards", `${boardState.board_id}`));
-    navigate("/boards");
-  }; */
+  const updatebgColor = async (bgColor: string | undefined) => {
+    /** 타입 맟추기용 꼼수 template literal */
+    await updateDoc(doc(db, "boards", `${boardState.board_id}`), {
+      board_bg_color: bgColor,
+    });
+  };
+
+  const submitColor: SubmitHandler<FormInput> = ({ bgColor }) => {
+    updatebgColor(bgColor);
+  };
 
   useEffect(() => {
     let unsubscribe: Unsubscribe | null = null;
@@ -135,8 +151,8 @@ export default function Board() {
               <div className="flex items-center justify-start gap-2">
                 <form onSubmit={handleSubmit(onSubmit)} ref={boardNameRef}>
                   <Input
-                    id="user"
-                    type="boardName"
+                    id="boardName"
+                    type="text"
                     placeholder="your board name"
                     {...register("boardName", { required: true })}
                     required
@@ -209,8 +225,49 @@ export default function Board() {
                               side="right"
                               align="start"
                               sideOffset={20}
-                              className="relative flex h-[120px] w-60 items-center justify-center gap-3 overflow-hidden rounded-md border-0 bg-zinc-700 p-4"
-                            ></HoverCardContent>
+                              className="relative flex w-60 flex-col items-center justify-center gap-4 overflow-hidden rounded-md border-0 bg-zinc-700 p-4"
+                            >
+                              <label
+                                htmlFor="color"
+                                className="mt-1 text-base text-slate-200"
+                              >
+                                Choose a color
+                              </label>
+                              <form
+                                className="flex w-full flex-col justify-start gap-2"
+                                onSubmit={handleSubmit(submitColor)}
+                              >
+                                <section className="flex flex-wrap justify-between gap-2">
+                                  {colors.map((color) => (
+                                    <div
+                                      key={color}
+                                      className="flex items-center"
+                                    >
+                                      <label
+                                        htmlFor={color}
+                                        className={`h-10 w-10 rounded-md ${color} flex cursor-pointer items-center justify-center`}
+                                      >
+                                        <Input
+                                          type="radio"
+                                          id={color}
+                                          {...register("bgColor", {
+                                            required: true,
+                                          })}
+                                          value={color}
+                                          className="z-20 h-4 w-4 cursor-pointer focus:ring-sky-500"
+                                        />
+                                      </label>
+                                    </div>
+                                  ))}
+                                </section>
+                                <button
+                                  type="submit"
+                                  className="flex w-full items-center justify-center rounded-md bg-zinc-900 text-white p-2"
+                                >
+                                  <p>change color</p>
+                                </button>
+                              </form>
+                            </HoverCardContent>
                           </HoverCard>
 
                           <li className="popover-item">
@@ -273,12 +330,12 @@ export default function Board() {
                               </li>
                             </SheetTrigger>
                             <SheetContent className="border-0 bg-zinc-900">
-                              <SheetHeader className="mb-3 flex w-full flex-row items-center justify-center border-0 border-b border-zinc-500 pb-3 relative">
+                              <SheetHeader className="relative mb-3 flex w-full flex-row items-center justify-center border-0 border-b border-zinc-500 pb-3">
                                 <SheetTitle className="text-xl font-medium capitalize text-white">
                                   Archived
                                 </SheetTitle>
-                                <SheetPrimitive.Close className="absolute  right-0">
-                                  <CloseIcon/>
+                                <SheetPrimitive.Close className="absolute right-0">
+                                  <CloseIcon />
                                 </SheetPrimitive.Close>
                               </SheetHeader>
                               <Tabs defaultValue="cards">
@@ -289,7 +346,7 @@ export default function Board() {
                                   </TabsTrigger>
                                 </TabsList>
                                 <TabsContent value="cards">
-                                  <ul className="w-full flex flex-col items-center justify-start gap-4 py-4">
+                                  <ul className="flex w-full flex-col items-center justify-start gap-4 py-4">
                                     {/* archived cards */}
                                     {archivedList.map((card) => {
                                       const [section] = sections.filter(
@@ -344,9 +401,8 @@ export default function Board() {
                                   </ul>
                                 </TabsContent>
                                 <TabsContent value="sections">
-                                <ul className="w-full flex flex-col items-center justify-start gap-4 py-4">
-                                {archivedSections.map((section) => {
-                                      
+                                  <ul className="flex w-full flex-col items-center justify-start gap-4 py-4">
+                                    {archivedSections.map((section) => {
                                       return (
                                         <section className="flex w-full flex-col items-start justify-start gap-3">
                                           <div className="w-full rounded-xl bg-zinc-800 px-6 py-4">
@@ -359,8 +415,11 @@ export default function Board() {
                                               {/* restore task */}
                                               <p
                                                 className="text-md flex items-center gap-3 rounded-xl px-3 py-2 capitalize hover:bg-zinc-900"
-                                                onClick= {() =>  {
-                                                  const { section_id, ...payload} = section
+                                                onClick={() => {
+                                                  const {
+                                                    section_id,
+                                                    ...payload
+                                                  } = section;
                                                   updateSection(section_id, {
                                                     ...payload,
                                                     archived: false,
@@ -374,7 +433,11 @@ export default function Board() {
                                               {/* delete task */}
                                               <p
                                                 className="text-md flex items-center gap-3 rounded-xl px-3 py-2 capitalize hover:bg-zinc-900"
-                                                onClick={() => deleteSection(section.section_id)}
+                                                onClick={() =>
+                                                  deleteSection(
+                                                    section.section_id,
+                                                  )
+                                                }
                                               >
                                                 <DeleteIcon />
                                                 delete
@@ -384,7 +447,7 @@ export default function Board() {
                                         </section>
                                       );
                                     })}
-                                </ul>
+                                  </ul>
                                 </TabsContent>
                               </Tabs>
                             </SheetContent>
@@ -397,7 +460,7 @@ export default function Board() {
               </div>
             )}
           </header>
-          <section className="h-[calc(100vh-120px)] w-full bg-emerald-400">
+          <section className={`h-[calc(100vh-120px)] w-full ${boardState.board_bg_color}`}>
             <Kanban />
           </section>
         </section>
