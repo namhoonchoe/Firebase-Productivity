@@ -40,10 +40,10 @@ interface IKanbanStore {
   setTaskList: (lists: Task[]) => void;
 
   createSection: (sectionName: string) => void;
-  updateSection:(targetId: string, payload: SectionPayload) => void;
-   deleteSection: (targetId: string) => void;
+  updateSection: (targetId: string, payload: SectionPayload) => void;
+  deleteSection: (targetId: string) => void;
   clearSection: (targetSectionId: string) => void;
- 
+  swapSection: (currentIndex: number, targetIndex: number) => void;
 
   createTask: (payload: TaskPayload) => void;
   deleteTask: (targetId: string) => void;
@@ -85,7 +85,33 @@ export const useKanbanStore = create<IKanbanStore>((set) => ({
       }),
     }));
   },
- 
+
+  swapSection: (currentIndex: number, targetIndex: number) => {
+    if(currentIndex > targetIndex) {
+      set((state) => ({
+        sections: [
+          ...state.sections.slice(0, targetIndex),
+          state.sections[currentIndex] /** part a  */,
+          ...state.sections.slice(targetIndex+1, currentIndex),
+          /** part b */
+          state.sections[targetIndex],
+          ...state.sections.slice(currentIndex + 1),
+        ],
+      }))
+    } 
+
+    if(currentIndex < targetIndex) {
+    set((state) => ({
+      sections: [
+        ...state.sections.slice(0, currentIndex),
+        state.sections[targetIndex] /** part a  */,
+        ...state.sections.slice(currentIndex+1, targetIndex),
+        /** part b */
+        state.sections[currentIndex],
+        ...state.sections.slice(targetIndex + 1),
+      ],
+    }))}
+  },
 
   deleteSection: (targetId: string) => {
     set((state) => ({

@@ -52,7 +52,7 @@ export default function DetailDialog({
 }: {
   children: ReactElement;
   bsProp: string;
-  ddProp: string | Date ;
+  ddProp: string | Date;
   dsProp: string;
 }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -151,8 +151,8 @@ export default function DetailDialog({
                               !field.value && "text-white",
                             )}
                           >
-                            {field.value ? (
-                              format(field.value, "PPP")
+                            {  field.value instanceof Date ? 
+                             ( format(field.value, "PPP")
                             ) : (
                               <span>Pick a date</span>
                             )}
@@ -167,7 +167,11 @@ export default function DetailDialog({
                       >
                         <Calendar
                           mode="single"
-                          selected={typeof(field.value) === "string" ? undefined : field.value}
+                          selected={
+                            typeof field.value === "string"
+                              ? undefined
+                              : field.value
+                          }
                           onSelect={field.onChange}
                           initialFocus
                           className="bg-black text-white"
