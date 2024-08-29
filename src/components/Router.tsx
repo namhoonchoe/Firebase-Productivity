@@ -11,6 +11,7 @@ import Memo from "@/pages/Memo";
 import { Outlet } from "react-router";
 import ProtectedRoute from "./ProtectedRoute";
 import SidebarLayout from "./layouts/SidebarLayout";
+
 const RootRouter = createBrowserRouter([
   {
     path: "/",
@@ -30,7 +31,11 @@ const RootRouter = createBrowserRouter([
         path: "boards",
         element: <Boards />,
       },
-      { path: "boards/:boardId", element: <Board /> },
+      {
+        path: "boards/:boardId",
+        element: <Board />,
+        
+      },
       { path: "memo", element: <MemoIntro /> },
       { path: "memo/:momoId", element: <Memo /> },
 

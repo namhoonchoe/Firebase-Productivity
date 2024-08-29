@@ -1,4 +1,5 @@
 export { default as AddIcon } from './AddIcon';
+export { default as ArchiveIcon } from './ArchiveIcon';
 export { default as BoardsIcon } from './BoardsIcon';
 export { default as GoogleIcon } from './google-icon';
 export { default as GithubIcon } from './github-icon';
@@ -13,6 +14,9 @@ export { default as ChevronDownIcon } from './ChevronDownIcon';
 export { default as DeleteIcon } from './DeleteIcon';
 export { default as RestoreIcon } from './RestoreIcon';
 export { default as CalendarIcon } from './CalendarIcon';
-
+export { default as ToArchiveIcon } from './ToArchiveIcon';
+export { default as MoveIcon } from './MoveIcon';
+export { default as MoreIcon } from './MoreIcon';
+export { default as EsIcon } from './EsIcon';
 
  

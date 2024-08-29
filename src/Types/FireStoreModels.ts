@@ -15,12 +15,7 @@ export type MemoDocument = {
   bookmarked: boolean;
 };
 
-export enum BoardStatus {
-  onSchedule = "계획대로 진행중",
-  behindSchedule = "지연됨",
-  offTrack = "위험함",
-  completed = "완료",
-}
+
 
 export type BoardDocument = {
   user_id: string;
@@ -28,7 +23,7 @@ export type BoardDocument = {
   board_name: string;
   board_description: string   ;
   board_due_date: Date | string;
-  board_status: BoardStatus | string;
+  board_status:  string;
   board_bg_color: string;
   last_edited: string;
   section_ids: string[];

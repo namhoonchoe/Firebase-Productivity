@@ -9,7 +9,7 @@ import {
 import { Unsubscribe } from "firebase/auth";
 
 import { db, auth } from "@/services/firebase";
-import {   SubmitHandler, useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { BoardDocument } from "@/Types/FireStoreModels";
 import { useEffect, useState } from "react";
 import {
@@ -17,11 +17,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/shadcn/popover";
-import { PopoverClose } from "@radix-ui/react-popover";
 import { Link, useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/shadcn/input";
-import { Label } from "@/components/ui/shadcn/label";
-import CloseIcon from "@/components/svgIcons/CloseIcon";
 import { FirebaseError } from "firebase/app";
 import {
   Dialog,
@@ -44,7 +41,8 @@ import { format } from "date-fns";
 import { Textarea } from "@/components/ui/shadcn/textarea";
 import { z } from "zod";
 import { cn } from "@/lib/utils";
- 
+
+import { colors } from "@/utils/constants";
 
 export default function Boards() {
   const navigate = useNavigate();
@@ -57,7 +55,8 @@ export default function Boards() {
 
   type BoardPayload = {
     boardName: string;
-    dueDate?: Date ;
+    backgroundColor: string;
+    dueDate?: Date;
     description?: string;
   };
 
@@ -65,6 +64,7 @@ export default function Boards() {
     boardName,
     dueDate,
     description,
+    backgroundColor,
   }: BoardPayload) => {
     const boardId = crypto.randomUUID();
     try {
@@ -76,7 +76,7 @@ export default function Boards() {
         board_description: `${description ? description : ""}`,
         board_due_date: `${dueDate ? dueDate : ""}`,
         board_status: "",
-        board_bg_color: "",
+        board_bg_color: backgroundColor,
         section_ids: [],
         archived: false,
       } as BoardDocument);
@@ -90,6 +90,7 @@ export default function Boards() {
 
   const FormSchema = z.object({
     boardName: z.string(),
+    backgroundColor: z.string(),
     description: z.string().optional(),
     dueDate: z.date().optional(),
   });
@@ -99,9 +100,9 @@ export default function Boards() {
   const submitHandler: SubmitHandler<z.infer<typeof FormSchema>> = (
     data: z.infer<typeof FormSchema>,
   ) => {
-    const { boardName,description,dueDate }  = data
-    createBoard( { boardName,description,dueDate });
-    console.log(boards)
+    const { boardName, description, dueDate, backgroundColor } = data;
+    createBoard({ boardName, description, dueDate, backgroundColor });
+    console.log(boards);
   };
 
   useEffect(() => {
@@ -257,6 +258,41 @@ export default function Boards() {
                       </FormItem>
                     )}
                   />
+
+                  {/*background color */}
+                  <FormField
+                    control={form.control}
+                    name="backgroundColor"
+                    render={() => (
+                      <FormItem className="form-item">
+                        <FormLabel>
+                          <p className="form-label">Background color</p>
+                        </FormLabel>
+                        <section className="flex w-full flex-wrap justify-start gap-2">
+                          {colors.map((color) => (
+                            <div key={color} className="flex items-center">
+                              <label
+                                htmlFor={color}
+                                className={`h-10 w-10 rounded-md ${color} flex cursor-pointer items-center justify-center`}
+                              >
+                                <Input
+                                  type="radio"
+                                  id={color}
+                                  value={color}
+                                  onChange={() =>
+                                    form.setValue("backgroundColor", color)
+                                  }
+                                                                    className="z-20 h-4 w-4 cursor-pointer focus:ring-sky-500"
+                                />
+                              </label>
+                            </div>
+                          ))}
+                        </section>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
                   {/* desctiption */}
                   <FormField
                     control={form.control}
