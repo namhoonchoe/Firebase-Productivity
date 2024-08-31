@@ -6,8 +6,10 @@ import { useForm } from "react-hook-form";
 import { useKanbanStore } from "@/store/KanbanStore";
 import { AddIcon } from "@/components/svgIcons";
 import { useOutsideClick } from "@/hooks/useOutsideClick";
+import { useParams } from "react-router-dom";
 
 export default function AddSectionForm() {
+  const {boardId} = useParams()
   const [isAddMode, setIsAddMode] = useState<boolean>(false);
   const toggleAddMode = () => setIsAddMode(!isAddMode);
   const addFormRef = useRef<HTMLFormElement | null>(null);
@@ -22,7 +24,7 @@ export default function AddSectionForm() {
   };
 
   const handleValid = ({ sectionName }: FormInput) => {
-    createSection(sectionName);
+    createSection(sectionName,`${boardId}`);
     setValue("sectionName", "");
     toggleAddMode();
   };

@@ -1,20 +1,43 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { doc, onSnapshot, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  onSnapshot,
+  query,
+  setDoc,
+  updateDoc,
+  where,
+  writeBatch,
+} from "firebase/firestore";
+
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Input } from "@/components/ui/shadcn/input";
 import { db } from "@/services/firebase";
 import { Unsubscribe } from "firebase/auth";
-import { BoardDocument } from "@/Types/FireStoreModels";
+import {
+  BoardDocument,
+  SectionDocument,
+  TaskDocument,
+} from "@/Types/FireStoreModels";
+
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/shadcn/popover";
+
 import { PopoverClose } from "@radix-ui/react-popover";
+
 import * as SheetPrimitive from "@radix-ui/react-dialog";
+
 import { useOutsideClick } from "@/hooks/useOutsideClick";
+
 import Kanban from "@/pages/Board/Kanban";
+
 import {
   ArchiveIcon,
   ChevronDownIcon,
@@ -22,13 +45,17 @@ import {
   DeleteIcon,
   CloseIcon,
 } from "@/components/svgIcons";
+
 import { iconColorDark } from "@/utils/constants";
+
 import { useKanbanStore } from "@/store/KanbanStore";
+
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/shadcn/hover-card";
+
 import {
   Sheet,
   SheetContent,
@@ -45,7 +72,9 @@ import {
 } from "@/components/ui/shadcn/tabs";
 
 import { colors } from "@/utils/constants";
+
 import BoardDialog from "./DetailDialog";
+
 import SeeArchiveIcon from "@/components/svgIcons/SeeArchiveIcon";
 
 type FormInput = {
@@ -64,9 +93,12 @@ export default function Board() {
     board_status: "",
     board_bg_color: "",
     last_edited: "",
-    section_ids: [],
+
     archived: false,
   });
+  const [sectionSnapShot, setSectionSnapShot] = useState<SectionDocument[]>([]);
+  const [tasksSnapShot, setTasksSnapShot] = useState<TaskDocument[]>([]);
+  const batch = writeBatch(db);
 
   const {
     taskList,
@@ -75,7 +107,10 @@ export default function Board() {
     updateTask,
     deleteSection,
     updateSection,
+    setSections,
+    setSectionIds,
   } = useKanbanStore();
+
   const navigate = useNavigate();
 
   const archivedList = taskList.filter((task) => task.archived);
@@ -88,6 +123,16 @@ export default function Board() {
   const boardNameRef = useRef<HTMLFormElement | null>(null);
 
   useOutsideClick({ ref: boardNameRef, handler: toggleEdit });
+
+  /** write functions below
+   *  @param boardName
+   *
+   * delete sections
+   * delete tasks
+   *
+   * update board
+   * update tasks
+   */
 
   const editBoardName = async (boardName: string | undefined) => {
     /** 타입 맟추기용 꼼수 template literal */
@@ -115,12 +160,55 @@ export default function Board() {
     navigate("/boards");
   };
 
+  /** delete sction in firesotre */
+
+  const deleteSectionFS = async (targetId: string) => {
+    await deleteDoc(doc(db, "sections", targetId));
+  };
+
+  const dsHandler = (targetId: string) => {
+    const snapshotIds = [] as string[];
+
+    sectionSnapShot.map((snapShot) => {
+      snapshotIds.push(snapShot.section_id);
+    });
+
+    if (snapshotIds.includes(targetId)) {
+      deleteSectionFS(targetId);
+    }
+    deleteSection(targetId);
+  };
+
+  /* delete task in firestore*/
+
+  const deleteTaskFS = async (targetId: string) => {
+    await deleteDoc(doc(db, "tasks", targetId));
+  };
+
+  const cleanUp = async () => {
+    /** add new sections  */
+    sections.map((section) => {
+      const { section_id, section_name, archived, board_id } = section;
+      const sectionRef = doc(db, "sections", section_id);
+
+      batch.set(sectionRef, {
+        section_name: section_name,
+        section_id: section_id,
+        board_id: board_id,
+        archived: archived,
+      });
+    });
+    await batch.commit();
+  };
+
   const submitColor: SubmitHandler<FormInput> = ({ bgColor }) => {
     updatebgColor(bgColor);
   };
 
   useEffect(() => {
     let unsubscribe: Unsubscribe | null = null;
+
+    let mounted = true;
 
     const getBoard = async () => {
       const docRef = doc(db, "boards", `${boardId}`);
@@ -131,23 +219,40 @@ export default function Board() {
         setBoardState(board);
       });
     };
-    getBoard();
+
+    const getSections = async () => {
+      setSections([]);
+      setSectionIds([]);
+
+      const sectionRef = collection(db, "sections");
+      const sectionQ = query(sectionRef, where("board_id", "==", boardId));
+      const querySnapshot = await getDocs(sectionQ);
+
+      const sections = [] as Array<SectionDocument>;
+
+      querySnapshot.forEach((doc) => {
+        sections.push(doc.data() as SectionDocument);
+      });
+      setSections(sections);
+      setSectionSnapShot(sections);
+      setSectionIds(sections);
+    };
+
+    if (mounted) {
+      getBoard();
+      getSections();
+    }
 
     return () => {
       /*       unsubscribe && unsubscribe();
-       */
+      onSanpShot 리스너 해지       */
+      cleanUp();
+      mounted = false;
+
       unsubscribe && unsubscribe();
     };
   }, []);
 
-  /**
-   *  get the board form firestore
-   *
-   */
-
-  /* get task list from firestore
-  
-  */
   if (!boardState) return <div>Loading...</div>;
 
   return (
@@ -394,34 +499,31 @@ export default function Board() {
                                         </p>
                                       </div>
                                       <div className="flex flex-row items-center justify-start gap-3 pl-2 text-white">
-                                        <div>
-                                          {/* restore task */}
-                                          <p
-                                            className="text-md flex items-center gap-3 rounded-xl px-3 py-2 capitalize hover:bg-zinc-900"
-                                            onClick={() => {
-                                              const { section_id, ...payload } =
-                                                section;
-                                              updateSection(section_id, {
-                                                ...payload,
-                                                archived: false,
-                                              });
-                                            }}
-                                          >
-                                            <RestoreIcon /> restore
-                                          </p>
-                                        </div>
-                                        <div>
-                                          {/* delete task */}
-                                          <p
-                                            className="text-md flex items-center gap-3 rounded-xl px-3 py-2 capitalize hover:bg-zinc-900"
-                                            onClick={() =>
-                                              deleteSection(section.section_id)
-                                            }
-                                          >
-                                            <DeleteIcon />
-                                            delete
-                                          </p>
-                                        </div>
+                                        {/* restore task */}
+                                        <p
+                                          className="text-md flex items-center gap-3 rounded-xl px-3 py-2 capitalize hover:bg-zinc-900"
+                                          onClick={() => {
+                                            const { section_id, ...payload } =
+                                              section;
+                                            updateSection(section_id, {
+                                              ...payload,
+                                              archived: false,
+                                            });
+                                          }}
+                                        >
+                                          <RestoreIcon /> restore
+                                        </p>
+
+                                        {/* delete task */}
+                                        <p
+                                          className="text-md flex items-center gap-3 rounded-xl px-3 py-2 capitalize hover:bg-zinc-900"
+                                          onClick={() =>
+                                            dsHandler(section.section_id)
+                                          }
+                                        >
+                                          <DeleteIcon />
+                                          delete
+                                        </p>
                                       </div>
                                     </section>
                                   );

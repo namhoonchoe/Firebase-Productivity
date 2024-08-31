@@ -2,6 +2,7 @@ import { create } from "zustand";
 
 type Section = {
   section_name: string;
+  board_id: string;
   section_id: string;
   archived: boolean;
 };
@@ -35,11 +36,13 @@ type SectionPayload = {
 interface IKanbanStore {
   sections: Section[];
   taskList: Task[];
+  sectionIds: string[];
 
+  setSectionIds: (sections: Section[]) => void;
   setSections: (sections: Section[]) => void;
   setTaskList: (lists: Task[]) => void;
 
-  createSection: (sectionName: string) => void;
+  createSection: (sectionName: string, boardId: string) => void;
   updateSection: (targetId: string, payload: SectionPayload) => void;
   deleteSection: (targetId: string) => void;
   clearSection: (targetSectionId: string) => void;
@@ -53,6 +56,7 @@ interface IKanbanStore {
 export const useKanbanStore = create<IKanbanStore>((set) => ({
   sections: [],
   taskList: [],
+  sectionIds: [],
 
   setSections: (sections: Section[]) => {
     set(() => ({ sections: [...sections] }));
@@ -62,12 +66,21 @@ export const useKanbanStore = create<IKanbanStore>((set) => ({
     set(() => ({ taskList: [...lists] }));
   },
 
-  createSection: (sectionName: string) =>
+  setSectionIds: (sections: Section[]) => {
+    const idBucket = [] as string[];
+    sections.map((section) => idBucket.push(section.section_id));
+    set(() => ({
+      sectionIds: idBucket,
+    }));
+  },
+
+  createSection: (sectionName: string, boardId: string) =>
     set((state) => ({
       sections: [
         ...state.sections,
         {
           section_name: sectionName,
+          board_id: boardId,
           section_id: crypto.randomUUID(),
           archived: false,
         },
@@ -87,30 +100,31 @@ export const useKanbanStore = create<IKanbanStore>((set) => ({
   },
 
   swapSection: (currentIndex: number, targetIndex: number) => {
-    if(currentIndex > targetIndex) {
+    if (currentIndex > targetIndex) {
       set((state) => ({
         sections: [
           ...state.sections.slice(0, targetIndex),
           state.sections[currentIndex] /** part a  */,
-          ...state.sections.slice(targetIndex+1, currentIndex),
+          ...state.sections.slice(targetIndex + 1, currentIndex),
           /** part b */
           state.sections[targetIndex],
           ...state.sections.slice(currentIndex + 1),
         ],
-      }))
-    } 
+      }));
+    }
 
-    if(currentIndex < targetIndex) {
-    set((state) => ({
-      sections: [
-        ...state.sections.slice(0, currentIndex),
-        state.sections[targetIndex] /** part a  */,
-        ...state.sections.slice(currentIndex+1, targetIndex),
-        /** part b */
-        state.sections[currentIndex],
-        ...state.sections.slice(targetIndex + 1),
-      ],
-    }))}
+    if (currentIndex < targetIndex) {
+      set((state) => ({
+        sections: [
+          ...state.sections.slice(0, currentIndex),
+          state.sections[targetIndex] /** part a  */,
+          ...state.sections.slice(currentIndex + 1, targetIndex),
+          /** part b */
+          state.sections[currentIndex],
+          ...state.sections.slice(targetIndex + 1),
+        ],
+      }));
+    }
   },
 
   deleteSection: (targetId: string) => {

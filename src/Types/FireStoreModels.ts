@@ -16,7 +16,6 @@ export type MemoDocument = {
 };
 
 
-
 export type BoardDocument = {
   user_id: string;
   board_id: string;
@@ -26,11 +25,11 @@ export type BoardDocument = {
   board_status:  string;
   board_bg_color: string;
   last_edited: string;
-  section_ids: string[];
   archived: boolean;
 };
 
 export type SectionDocument = {
+  board_id: string;
   section_id: string;
   section_name: string;
   archived: boolean;
