@@ -20,10 +20,11 @@ import { CloseIcon, DeleteIcon, RestoreIcon } from "@/components/svgIcons";
 import { useKanbanStore } from "@/store/KanbanStore";
 import { deleteDoc, doc } from "firebase/firestore";
 import { db } from "@/services/firebase";
-import { SectionDocument } from "@/Types/FireStoreModels";
+import { SectionDocument, TaskDocument } from "@/Types/FireStoreModels";
 
 type DrawerProps = {
     sectionSnapshot: SectionDocument[]
+    tasksSnapShot:TaskDocument[]
 }
 
 export default function BoardDrawer({sectionSnapshot}:DrawerProps) {
@@ -34,6 +35,13 @@ export default function BoardDrawer({sectionSnapshot}:DrawerProps) {
   
   const deleteSectionFS = async (targetId: string) => {
     await deleteDoc(doc(db, "sections", targetId));
+    
+    /**
+     * delete all tasks in this section
+     * 
+     * 
+     */
+  
   };
 
   const dsHandler = (targetId: string) => {

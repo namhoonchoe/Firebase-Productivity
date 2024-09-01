@@ -38,9 +38,10 @@ export type SectionDocument = {
 export type TaskDocument = {
   task_id: string;
   section_id: string;
-  start_date: Date | undefined;
-  due_date: Date | undefined;
-  task: string;
-  description: string | undefined;
+  board_id: string;
+  start_date: Date| string;
+  due_date: Date | string;
+  task_title: string;
+  description: string  ;
   archived: boolean;
 };

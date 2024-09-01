@@ -10,19 +10,20 @@ type Section = {
 type Task = {
   task_id: string;
   section_id: string;
+  board_id: string;
   task_title: string;
-  description: string | undefined;
-  start_date: Date | undefined;
-  due_date: Date | undefined;
+  description: string  ;
+  start_date: Date | string;
+  due_date: Date | string;
   archived: boolean;
 };
 
 type TaskPayload = {
   task_title: string;
   section_id: string;
-  description: string | undefined;
-  start_date: Date | undefined;
-  due_date: Date | undefined;
+  description: string  ;
+  start_date: Date | string;
+  due_date: Date | string;
   archived: boolean;
 };
 
@@ -48,7 +49,7 @@ interface IKanbanStore {
   clearSection: (targetSectionId: string) => void;
   swapSection: (currentIndex: number, targetIndex: number) => void;
 
-  createTask: (payload: TaskPayload) => void;
+  createTask: (payload: TaskPayload, boardId:string) => void;
   deleteTask: (targetId: string) => void;
   updateTask: (payload: TaskPayload, targetId: string) => void;
 }
@@ -147,12 +148,13 @@ export const useKanbanStore = create<IKanbanStore>((set) => ({
     }));
   },
 
-  createTask: (payload: TaskPayload) => {
+  createTask: (payload: TaskPayload,boardId:string) => {
     set((state) => ({
       taskList: [
         ...state.taskList,
         {
           ...payload,
+          board_id:boardId,
           task_id: crypto.randomUUID(),
           archived: false,
         },

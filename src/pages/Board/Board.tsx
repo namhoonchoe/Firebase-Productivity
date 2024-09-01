@@ -47,10 +47,7 @@ export default function Board() {
   const {
     taskList,
     sections,
-    deleteTask,
-    updateTask,
-    deleteSection,
-    updateSection,
+    setTaskList,
     setSections,
     setSectionIds,
   } = useKanbanStore();
@@ -64,7 +61,8 @@ export default function Board() {
  
 
   const cleanUp = async () => {
-    /** add new sections  */
+
+    /** add new sections  to firestore */
     sections.map((section) => {
       const { section_id, section_name, archived, board_id } = section;
       const sectionRef = doc(db, "sections", section_id);
@@ -76,6 +74,18 @@ export default function Board() {
         archived: archived,
       });
     });
+
+    /** add new tasks to firetore */
+    taskList.map((task) => {
+      const { task_id, ...rest} = task;
+      const taskRef = doc(db, "tasks", task_id);
+
+      batch.set(taskRef, {
+        task_id: task_id,
+       ...rest,
+      });
+    })
+
     await batch.commit();
   };
 
@@ -86,8 +96,7 @@ export default function Board() {
 
     const getBoard = async () => {
       const docRef = doc(db, "boards", `${boardId}`);
-      /*       const boardQuery = query(boardRef, where("user_id", "==", userId));
-       */
+     
       unsubscribe = await onSnapshot(docRef, (doc) => {
         const board = doc.data() as BoardDocument;
         setBoardState(board);
@@ -112,9 +121,27 @@ export default function Board() {
       setSectionIds(sections);
     };
 
+
+    const getTasks = async () => { 
+      setTaskList([])
+
+      const taskRef = collection(db, "tasks");
+      const taskQ = query(taskRef, where("board_id", "==", boardId));
+      const querySnapshot = await getDocs(taskQ);
+    
+      const tasks = [] as Array<TaskDocument>;
+
+      querySnapshot.forEach((doc) => {
+        tasks.push(doc.data() as TaskDocument);
+      });
+      setTaskList(tasks);
+      setTasksSnapShot(tasks);
+    }
+
     if (mounted) {
       getBoard();
       getSections();
+      getTasks()
     }
 
     return () => {
@@ -137,13 +164,14 @@ export default function Board() {
           boardDueDateProp={boardState.board_due_date}
           boardNameProp={boardState.board_name}
           sectionSnapshotProp={sectionSnapShot}
+          tasksSnapShotPorp={tasksSnapShot}
         />
-      <section
+      <div
         className={`h-[calc(100vh-120px)] w-full ${boardState.board_bg_color}`}
       >
        
         <Kanban />
-      </section>
+      </div>
     </section>
   );
 }

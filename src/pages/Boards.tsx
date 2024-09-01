@@ -5,6 +5,8 @@ import {
   where,
   query,
   onSnapshot,
+  getDocs,
+  writeBatch,
 } from "firebase/firestore";
 import { Unsubscribe } from "firebase/auth";
 
@@ -52,6 +54,7 @@ export default function Boards() {
   const toggleOpen = () => setIsOpen(!isOpen);
 
   const [boards, setBoards] = useState<BoardDocument[]>([]);
+  const batch = writeBatch(db);
 
   type BoardPayload = {
     boardName: string;
@@ -104,6 +107,32 @@ export default function Boards() {
     createBoard({ boardName, description, dueDate, backgroundColor });
     console.log(boards);
   };
+
+  const deleteBoard = async (targetId:string) => {
+    /** delete all sections in deleted board  */
+    const sectionsRef = collection(db, "sections");
+    const tasksRef = collection(db, "tasks");
+
+    const taskQ =  query(tasksRef,where("board_id", "==", targetId))
+    const sectionQ = query(sectionsRef, where("board_id", "==", targetId));
+
+    const sectionSnapshot = await getDocs(sectionQ);
+    const taskSnapshot = await getDocs(taskQ);
+
+
+    sectionSnapshot.forEach((doc) =>{
+      batch.delete(doc);
+    })
+
+    taskSnapshot.forEach((doc) =>{
+      batch.delete(doc);
+    })
+
+    await batch.commit();
+
+    /* delete all tasks in deleted board  */
+  }
+
 
   useEffect(() => {
     let unsubscribe: Unsubscribe | null = null;

@@ -20,7 +20,7 @@ import { db } from "@/services/firebase";
 import { useNavigate, useParams } from "react-router-dom";
 import ColorPalette from "./ColorPalette";
 import BoardDrawer from "./BoardDrawer";
-import { SectionDocument } from "@/Types/FireStoreModels";
+import { SectionDocument, TaskDocument } from "@/Types/FireStoreModels";
 
 type FormInput = {
   boardName: string;
@@ -32,6 +32,7 @@ type BoardHeaderProps = {
   boardDueDateProp: string | Date;
   boardDescriptionProp: string;
   sectionSnapshotProp: SectionDocument[];
+  tasksSnapShotPorp:TaskDocument[]
 };
 
 export default function BoardHeader({
@@ -40,6 +41,7 @@ export default function BoardHeader({
   boardDueDateProp,
   boardNameProp,
   sectionSnapshotProp,
+  tasksSnapShotPorp
 }: BoardHeaderProps) {
   const [isEdit, setIsEdit] = useState<boolean>(false);
 
@@ -160,7 +162,7 @@ export default function BoardHeader({
                       <p className="popover-text">archive this board</p>
                     </li>
                     {/* drawer */}
-                    <BoardDrawer sectionSnapshot={sectionSnapshotProp} />
+                    <BoardDrawer sectionSnapshot={sectionSnapshotProp} tasksSnapShot={tasksSnapShotPorp} />
                   </ul>
                 </div>
               </section>
