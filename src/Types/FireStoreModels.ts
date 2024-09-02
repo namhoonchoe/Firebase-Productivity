@@ -20,7 +20,7 @@ export type BoardDocument = {
   user_id: string;
   board_id: string;
   board_name: string;
-  board_description: string   ;
+  board_description: string;
   board_due_date: Date | string;
   board_status:  string;
   board_bg_color: string;
