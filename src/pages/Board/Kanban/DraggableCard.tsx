@@ -44,25 +44,24 @@ export default function DraggableCard({
 }) {
   const { taskList, updateTask } = useKanbanStore();
   const [task] = taskList.filter((task) => task.task_id === cardId);
-  const { task_id, ...payload } = task;
-  const { task_title, start_date, due_date, description } = payload;
+
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const toggleOpen = () => setIsOpen(!isOpen);
 
   const FormSchema = z.object({
     task_title: z.string(),
-    start_date: z.date().optional(),
-    due_date: z.date().optional(),
-    description: z.string().optional(),
+    start_date: z.date().or(z.string()).optional(),
+    due_date: z.date().or(z.string()).optional(),
+    description: z.string(),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      task_title: task_title,
-      start_date: start_date,
-      due_date: due_date,
-      description: description,
+      task_title: task.task_title,
+      start_date: task.start_date,
+      due_date: task.due_date,
+      description: task.description,
     },
   });
 
@@ -77,7 +76,7 @@ export default function DraggableCard({
       <DialogTrigger>
         <div className="flex w-64 items-start justify-start rounded-xl bg-zinc-700 px-6 py-4">
           <p className="max-w-full break-all text-xl font-bold text-white">
-            {task_title}
+            {task.task_title}
           </p>
         </div>
       </DialogTrigger>
@@ -85,7 +84,7 @@ export default function DraggableCard({
         <Form {...form}>
           <header className="relative flex w-full flex-shrink-0 flex-grow-0 items-center justify-between">
             <p className="flex-shrink-0 flex-grow-0 text-left text-lg font-semibold text-white">
-              {task_title} in {sectionName}
+              {task.task_title} in {sectionName}
             </p>
             <DialogClose>
               <CloseIcon width={16} height={16} />
@@ -99,7 +98,7 @@ export default function DraggableCard({
                 render={({ field }) => (
                   <FormItem className="form-item">
                     <FormLabel>
-                      <p className="form-label">Task name</p>
+                      <p className="form-label">Task title</p>
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -132,7 +131,7 @@ export default function DraggableCard({
                               !field.value && "text-white",
                             )}
                           >
-                            {field.value ? (
+                            {field.value instanceof Date ? (
                               format(field.value, "PPP")
                             ) : (
                               <span>Pick a date</span>
@@ -177,7 +176,7 @@ export default function DraggableCard({
                               !field.value && "text-white",
                             )}
                           >
-                            {field.value ? (
+                            {field.value instanceof Date ? (
                               format(field.value, "PPP")
                             ) : (
                               <span>Pick a date</span>
@@ -230,11 +229,12 @@ export default function DraggableCard({
             <footer className="flex w-full flex-shrink-0 flex-grow-0 items-center justify-between">
               <div
                 className="flex flex-shrink-0 flex-grow-0 items-center justify-center gap-2.5 rounded-md bg-red-500 px-4 py-2"
-                onClick={() =>
-                  updateTask({ ...payload, archived: true }, task_id)
-                }
+                onClick={() => {
+                  const { task_id, ...payload } = task;
+                  updateTask({ ...payload, archived: true }, task_id);
+                }}
               >
-                <ToArchiveIcon/>
+                <ToArchiveIcon />
                 <p className="flex-shrink-0 flex-grow-0 text-left text-sm font-medium text-white">
                   Archive
                 </p>

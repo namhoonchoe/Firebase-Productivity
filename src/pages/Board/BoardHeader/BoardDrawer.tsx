@@ -35,10 +35,8 @@ export default function BoardDrawer({sectionSnapshot,tasksSnapShot}:DrawerProps)
   
   const deleteSectionFS = async (targetId: string) => {
     await deleteDoc(doc(db, "sections", targetId));
+     // delete all tasks in this section
     
-    /**
-     * delete all tasks in this section
-     */
     const tasksRef = collection(db, "tasks");
 
     const taskQ = query(tasksRef, where("section_id", "==", targetId));
