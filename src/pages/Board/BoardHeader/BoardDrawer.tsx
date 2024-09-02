@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/shadcn/tabs";
 import { CloseIcon, DeleteIcon, RestoreIcon } from "@/components/svgIcons";
 import { useKanbanStore } from "@/store/KanbanStore";
-import { deleteDoc, doc } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDocs, query, where, writeBatch } from "firebase/firestore";
 import { db } from "@/services/firebase";
 import { SectionDocument, TaskDocument } from "@/Types/FireStoreModels";
 
@@ -27,9 +27,9 @@ type DrawerProps = {
     tasksSnapShot:TaskDocument[]
 }
 
-export default function BoardDrawer({sectionSnapshot}:DrawerProps) {
+export default function BoardDrawer({sectionSnapshot,tasksSnapShot}:DrawerProps) {
   const { taskList,sections, deleteTask, updateTask, updateSection, deleteSection } = useKanbanStore();
-
+  const batch = writeBatch(db);
   const archivedList = taskList.filter((task) => task.archived);
   const archivedSections = sections.filter((section) => section.archived);
   
@@ -38,12 +38,26 @@ export default function BoardDrawer({sectionSnapshot}:DrawerProps) {
     
     /**
      * delete all tasks in this section
-     * 
-     * 
      */
+    const tasksRef = collection(db, "tasks");
+
+    const taskQ = query(tasksRef, where("section_id", "==", targetId));
+    const tasksInSection = await getDocs(taskQ);
+
+    tasksInSection.forEach((task) => {
+      const { task_id } = task.data();
+      batch.delete(doc(db, "tasks", task_id));
+    });
+    await batch.commit();    
   
   };
 
+  const deleteTaskFS = async (targetId: string) => {
+    await deleteDoc(doc(db, "tasks", targetId));
+  }
+
+
+  /** delete section handler */
   const dsHandler = (targetId: string) => {
     const snapshotIds = [] as string[];
 
@@ -56,6 +70,21 @@ export default function BoardDrawer({sectionSnapshot}:DrawerProps) {
     }
     deleteSection(targetId);
   };
+
+
+  /** delete task handler */
+  const dtHandler = (targetId: string) => {
+    const snapshotIds = [] as string[];
+
+    tasksSnapShot.map((snapShot) => {
+      snapshotIds.push(snapShot.task_id);
+    });
+
+    if (snapshotIds.includes(targetId)) {
+      deleteTaskFS(targetId);
+    }
+    deleteTask(targetId);
+  }
 
   return (
     <Sheet>
@@ -117,7 +146,7 @@ export default function BoardDrawer({sectionSnapshot}:DrawerProps) {
                         {/* delete task */}
                         <p
                           className="text-md flex items-center gap-3 rounded-xl px-3 py-2 capitalize hover:bg-zinc-900"
-                          onClick={() => deleteTask(card.task_id)}
+                          onClick={() => dtHandler(card.task_id)}
                         >
                           <DeleteIcon />
                           delete
