@@ -1,18 +1,14 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
+
 import {
   collection,
-  deleteDoc,
   doc,
-  getDoc,
   getDocs,
   onSnapshot,
   query,
-  setDoc,
-  updateDoc,
   where,
-  writeBatch,
-} from "firebase/firestore";
+ } from "firebase/firestore";
 
 import { db } from "@/services/firebase";
 import { Unsubscribe } from "firebase/auth";
@@ -40,14 +36,11 @@ export default function Board() {
 
     archived: false,
   });
-  const [sectionSnapShot, setSectionSnapShot] = useState<SectionDocument[]>([]);
-  const [tasksSnapShot, setTasksSnapShot] = useState<TaskDocument[]>([]);
-  const batch = writeBatch(db);
 
   const {
-    taskList,
-    sections,
     setTaskList,
+    setSsnapshot,
+    setTsnapshot,
     setSections,
     setSectionIds,
   } = useKanbanStore();
@@ -58,45 +51,13 @@ export default function Board() {
   const boardNameRef = useRef<HTMLFormElement | null>(null);
 
   useOutsideClick({ ref: boardNameRef, handler: toggleEdit });
- 
-
-  const cleanUp = async () => {
-
-    /** add new sections  to firestore */
-    sections.map((section) => {
-      const { section_id, section_name, archived, board_id } = section;
-      const sectionRef = doc(db, "sections", section_id);
-
-      batch.set(sectionRef, {
-        section_name: section_name,
-        section_id: section_id,
-        board_id: board_id,
-        archived: archived,
-      });
-    });
-
-    /** add new tasks to firetore */
-    taskList.map((task) => {
-      const { task_id, ...rest} = task;
-      const taskRef = doc(db, "tasks", task_id);
-
-      batch.set(taskRef, {
-        task_id: task_id,
-       ...rest,
-      });
-    })
-
-    await batch.commit();
-  };
 
   useEffect(() => {
     let unsubscribe: Unsubscribe | null = null;
 
-    let mounted = true;
-
     const getBoard = async () => {
       const docRef = doc(db, "boards", `${boardId}`);
-     
+
       unsubscribe = await onSnapshot(docRef, (doc) => {
         const board = doc.data() as BoardDocument;
         setBoardState(board);
@@ -104,9 +65,6 @@ export default function Board() {
     };
 
     const getSections = async () => {
-      setSections([]);
-      setSectionIds([]);
-
       const sectionRef = collection(db, "sections");
       const sectionQ = query(sectionRef, where("board_id", "==", boardId));
       const querySnapshot = await getDocs(sectionQ);
@@ -116,39 +74,33 @@ export default function Board() {
       querySnapshot.forEach((doc) => {
         sections.push(doc.data() as SectionDocument);
       });
+
       setSections(sections);
-      setSectionSnapShot(sections);
+      setSsnapshot(sections);
       setSectionIds(sections);
     };
 
-
-    const getTasks = async () => { 
-      setTaskList([])
-
+    const getTasks = async () => {
       const taskRef = collection(db, "tasks");
       const taskQ = query(taskRef, where("board_id", "==", boardId));
       const querySnapshot = await getDocs(taskQ);
-    
+
       const tasks = [] as Array<TaskDocument>;
 
       querySnapshot.forEach((doc) => {
         tasks.push(doc.data() as TaskDocument);
       });
       setTaskList(tasks);
-      setTasksSnapShot(tasks);
-    }
+      setTsnapshot(tasks);
+    };
 
-    if (mounted) {
-      getBoard();
-      getSections();
-      getTasks()
-    }
+    getBoard();
+    getSections();
+    getTasks();
 
     return () => {
       /*       unsubscribe && unsubscribe();
       onSanpShot 리스너 해지       */
-      cleanUp();
-      mounted = false;
 
       unsubscribe && unsubscribe();
     };
@@ -158,18 +110,15 @@ export default function Board() {
 
   return (
     <section className="flex w-full flex-col items-start justify-start">
-       <BoardHeader
-          boardStatusProp={boardState.board_status}
-          boardDescriptionProp={boardState.board_description}
-          boardDueDateProp={boardState.board_due_date}
-          boardNameProp={boardState.board_name}
-          sectionSnapshotProp={sectionSnapShot}
-          tasksSnapShotPorp={tasksSnapShot}
-        />
+      <BoardHeader
+        boardStatusProp={boardState.board_status}
+        boardDescriptionProp={boardState.board_description}
+        boardDueDateProp={boardState.board_due_date}
+        boardNameProp={boardState.board_name}
+      />
       <div
         className={`h-[calc(100vh-120px)] w-full ${boardState.board_bg_color}`}
       >
-       
         <Kanban />
       </div>
     </section>

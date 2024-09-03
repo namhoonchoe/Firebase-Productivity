@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import HLink from "@/components/HLink";
 import { PersonIcon } from "@/components/svgIcons";
 import {
   DropdownMenu,
@@ -22,9 +22,9 @@ export default function MenuPopover() {
         <DropdownMenuCheckboxItem onClick={handleSignOut}>
           로그아웃
         </DropdownMenuCheckboxItem>
-        <Link to="/profile">
+        <HLink to="/profile">
           <DropdownMenuCheckboxItem>개인 설정</DropdownMenuCheckboxItem>
-        </Link>
+        </HLink>
       </DropdownMenuContent>
     </DropdownMenu>
   );

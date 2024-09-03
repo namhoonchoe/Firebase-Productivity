@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 
 type Section = {
   section_name: string;
@@ -12,7 +13,7 @@ type Task = {
   section_id: string;
   board_id: string;
   task_title: string;
-  description: string  ;
+  description: string;
   start_date: Date | string;
   due_date: Date | string;
   archived: boolean;
@@ -21,7 +22,7 @@ type Task = {
 type TaskPayload = {
   task_title: string;
   section_id: string;
-  description: string  ;
+  description: string;
   start_date: Date | string;
   due_date: Date | string;
   archived: boolean;
@@ -37,11 +38,20 @@ type SectionPayload = {
 interface IKanbanStore {
   sections: Section[];
   taskList: Task[];
+  sectionsSnapShot: Section[];
+  taskListSnapShot: Task[];
   sectionIds: string[];
+
+  deletedTQ: string[];
+  deletedSQ: string[];
 
   setSectionIds: (sections: Section[]) => void;
   setSections: (sections: Section[]) => void;
   setTaskList: (lists: Task[]) => void;
+  setSsnapshot: (sections: Section[]) => void;
+  setTsnapshot: (lists: Task[]) => void;
+  setDeletedTasks: (targetId:string) => void;
+  setDeletedSections: (targetId:string) => void;
 
   createSection: (sectionName: string, boardId: string) => void;
   updateSection: (targetId: string, payload: SectionPayload) => void;
@@ -49,140 +59,171 @@ interface IKanbanStore {
   clearSection: (targetSectionId: string) => void;
   swapSection: (currentIndex: number, targetIndex: number) => void;
 
-  createTask: (payload: TaskPayload, boardId:string) => void;
+  createTask: (payload: TaskPayload, boardId: string) => void;
   deleteTask: (targetId: string) => void;
   updateTask: (payload: TaskPayload, targetId: string) => void;
 }
 
-export const useKanbanStore = create<IKanbanStore>((set) => ({
-  sections: [],
-  taskList: [],
-  sectionIds: [],
+export const useKanbanStore = create<IKanbanStore>()(
+  persist(
+    (set) => ({
+      sections: [] as Section[],
+      sectionsSnapShot: [] as Section[],
+      taskList: [] as Task[],
+      taskListSnapShot: [] as Task[],
+      sectionIds: [] as string[],
 
-  setSections: (sections: Section[]) => {
-    set(() => ({ sections: [...sections] }));
-  },
+      deletedTQ: [] as string[],
+      deletedSQ: [] as string[],
 
-  setTaskList: (lists: Task[]) => {
-    set(() => ({ taskList: [...lists] }));
-  },
+      setSections: (sections: Section[]) => {
+        set(() => ({ sections: [...sections] }));
+      },
 
-  setSectionIds: (sections: Section[]) => {
-    const idBucket = [] as string[];
-    sections.map((section) => idBucket.push(section.section_id));
-    set(() => ({
-      sectionIds: idBucket,
-    }));
-  },
+      setSsnapshot: (sections: Section[]) => {
+        set(() => ({ sectionsSnapShot: [...sections] }));
+      },
 
-  createSection: (sectionName: string, boardId: string) =>
-    set((state) => ({
-      sections: [
-        ...state.sections,
-        {
-          section_name: sectionName,
-          board_id: boardId,
-          section_id: crypto.randomUUID(),
-          archived: false,
-        },
-      ],
-    })),
+      setDeletedSections: (targetId:string) => {
+        set((state) => ({
+          deletedSQ:[
+            ...state.deletedSQ,targetId
+          ]
+        }));
+      },
 
-  updateSection: (targetId: string, payload: SectionPayload) => {
-    set((state) => ({
-      sections: state.sections.map((section) => {
-        if (section.section_id === targetId) {
-          return { ...section, ...payload };
-        } else {
-          return section;
+      setTaskList: (lists: Task[]) => {
+        set(() => ({ taskList: [...lists] }));
+      },
+
+      setTsnapshot: (lists: Task[]) => {
+        set(() => ({ taskListSnapShot: [...lists] }));
+      },
+
+      setDeletedTasks: (targetId:string) => {
+        set((state) => ({
+          deletedTQ:[
+            ...state.deletedTQ,targetId
+          ]
+        }));
+      },
+
+      setSectionIds: (sections: Section[]) => {
+        const idBucket = [] as string[];
+        sections.map((section) => idBucket.push(section.section_id));
+        set(() => ({
+          sectionIds: idBucket,
+        }));
+      },
+
+      createSection: (sectionName: string, boardId: string) =>
+        set((state) => ({
+          sections: [
+            ...state.sections,
+            {
+              section_name: sectionName,
+              board_id: boardId,
+              section_id: crypto.randomUUID(),
+              archived: false,
+            },
+          ],
+        })),
+
+      updateSection: (targetId: string, payload: SectionPayload) => {
+        set((state) => ({
+          sections: state.sections.map((section) => {
+            if (section.section_id === targetId) {
+              return { ...section, ...payload };
+            } else {
+              return section;
+            }
+          }),
+        }));
+      },
+
+      swapSection: (currentIndex: number, targetIndex: number) => {
+        if (currentIndex > targetIndex) {
+          set((state) => ({
+            sections: [
+              ...state.sections.slice(0, targetIndex),
+              state.sections[currentIndex] /** part a  */,
+              ...state.sections.slice(targetIndex + 1, currentIndex),
+              /** part b */
+              state.sections[targetIndex],
+              ...state.sections.slice(currentIndex + 1),
+            ],
+          }));
         }
-      }),
-    }));
-  },
 
-  swapSection: (currentIndex: number, targetIndex: number) => {
-    if (currentIndex > targetIndex) {
-      set((state) => ({
-        sections: [
-          ...state.sections.slice(0, targetIndex),
-          state.sections[currentIndex] /** part a  */,
-          ...state.sections.slice(targetIndex + 1, currentIndex),
-          /** part b */
-          state.sections[targetIndex],
-          ...state.sections.slice(currentIndex + 1),
-        ],
-      }));
-    }
-
-    if (currentIndex < targetIndex) {
-      set((state) => ({
-        sections: [
-          ...state.sections.slice(0, currentIndex),
-          state.sections[targetIndex] /** part a  */,
-          ...state.sections.slice(currentIndex + 1, targetIndex),
-          /** part b */
-          state.sections[currentIndex],
-          ...state.sections.slice(targetIndex + 1),
-        ],
-      }));
-    }
-  },
-
-  deleteSection: (targetId: string) => {
-    set((state) => ({
-      sections: state.sections.filter(
-        (section) => section.section_id !== targetId,
-      ),
-    }));
-  },
-
-  clearSection: (targetSectionId: string) => {
-    set((state) => ({
-      taskList: state.taskList.map((task) => {
-        if (task.section_id === targetSectionId) {
-          return { ...task, archived: true };
-        } else {
-          return task;
+        if (currentIndex < targetIndex) {
+          set((state) => ({
+            sections: [
+              ...state.sections.slice(0, currentIndex),
+              state.sections[targetIndex] /** part a  */,
+              ...state.sections.slice(currentIndex + 1, targetIndex),
+              /** part b */
+              state.sections[currentIndex],
+              ...state.sections.slice(targetIndex + 1),
+            ],
+          }));
         }
-      }),
-    }));
-  },
+      },
 
-  createTask: (payload: TaskPayload,boardId:string) => {
-    set((state) => ({
-      taskList: [
-        ...state.taskList,
-        {
-          ...payload,
-          board_id:boardId,
-          task_id: crypto.randomUUID(),
-          archived: false,
-        },
-      ],
-    }));
-  },
+      deleteSection: (targetId: string) => {
+        set((state) => ({
+          sections: state.sections.filter(
+            (section) => section.section_id !== targetId,
+          ),
+        }));
+      },
 
-  deleteTask: (taskId: string) => {
-    set((state) => ({
-      taskList: state.taskList.filter((task) => task.task_id !== taskId),
-    }));
-  },
+      clearSection: (targetSectionId: string) => {
+        set((state) => ({
+          taskList: state.taskList.map((task) => {
+            if (task.section_id === targetSectionId) {
+              return { ...task, archived: true };
+            } else {
+              return task;
+            }
+          }),
+        }));
+      },
 
-  /**
-   * 업데이트 태스크 ?????
-   *
-   *
-   */
+      createTask: (payload: TaskPayload, boardId: string) => {
+        set((state) => ({
+          taskList: [
+            ...state.taskList,
+            {
+              ...payload,
+              board_id: boardId,
+              task_id: crypto.randomUUID(),
+              archived: false,
+            },
+          ],
+        }));
+      },
 
-  updateTask: (payload: TaskPayload, taskId: string) => {
-    set((state) => ({
-      taskList: state.taskList.map((task) => {
-        if (task.task_id === taskId) {
-          return { ...task, ...payload };
-        } else {
-          return task;
-        }
-      }),
-    }));
-  },
-}));
+      deleteTask: (taskId: string) => {
+        set((state) => ({
+          taskList: state.taskList.filter((task) => task.task_id !== taskId),
+        }));
+      },
+
+      updateTask: (payload: TaskPayload, taskId: string) => {
+        set((state) => ({
+          taskList: state.taskList.map((task: Task) => {
+            if (task.task_id === taskId) {
+              return { ...task, ...payload };
+            } else {
+              return task;
+            }
+          }),
+        }));
+      },
+    }),
+    {
+      name: "kanbanStorage", // name of the item in the storage (must be unique)
+      storage: createJSONStorage(() => sessionStorage), // (optional) by default, 'localStorage' is used
+    },
+  ),
+);

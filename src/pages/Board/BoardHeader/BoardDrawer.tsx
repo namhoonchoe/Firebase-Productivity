@@ -18,71 +18,55 @@ import {
 } from "@/components/ui/shadcn/tabs";
 import { CloseIcon, DeleteIcon, RestoreIcon } from "@/components/svgIcons";
 import { useKanbanStore } from "@/store/KanbanStore";
-import { collection, deleteDoc, doc, getDocs, query, where, writeBatch } from "firebase/firestore";
-import { db } from "@/services/firebase";
-import { SectionDocument, TaskDocument } from "@/Types/FireStoreModels";
 
-type DrawerProps = {
-    sectionSnapshot: SectionDocument[]
-    tasksSnapShot:TaskDocument[]
-}
-
-export default function BoardDrawer({sectionSnapshot,tasksSnapShot}:DrawerProps) {
-  const { taskList,sections, deleteTask, updateTask, updateSection, deleteSection } = useKanbanStore();
-  const batch = writeBatch(db);
+export default function BoardDrawer() {
+  const {
+    taskList,
+    sections,
+    deleteTask,
+    updateTask,
+    updateSection,
+    deleteSection,
+    sectionsSnapShot,
+    taskListSnapShot,
+    setDeletedSections,
+    setDeletedTasks,
+  } = useKanbanStore();
   const archivedList = taskList.filter((task) => task.archived);
   const archivedSections = sections.filter((section) => section.archived);
-  
-  const deleteSectionFS = async (targetId: string) => {
-    await deleteDoc(doc(db, "sections", targetId));
-     // delete all tasks in this section
-    
-    const tasksRef = collection(db, "tasks");
 
-    const taskQ = query(tasksRef, where("section_id", "==", targetId));
-    const tasksInSection = await getDocs(taskQ);
 
-    tasksInSection.forEach((task) => {
-      const { task_id } = task.data();
-      batch.delete(doc(db, "tasks", task_id));
-    });
-    await batch.commit();    
-  
-  };
-
-  const deleteTaskFS = async (targetId: string) => {
-    await deleteDoc(doc(db, "tasks", targetId));
-  }
-
+   
 
   /** delete section handler */
   const dsHandler = (targetId: string) => {
     const snapshotIds = [] as string[];
 
-    sectionSnapshot.map((snapShot) => {
+    sectionsSnapShot.map((snapShot) => {
       snapshotIds.push(snapShot.section_id);
     });
 
+      /*TO SECTION DELETE QUEUE */
     if (snapshotIds.includes(targetId)) {
-      deleteSectionFS(targetId);
+      setDeletedSections(targetId)
     }
     deleteSection(targetId);
   };
-
 
   /** delete task handler */
   const dtHandler = (targetId: string) => {
     const snapshotIds = [] as string[];
 
-    tasksSnapShot.map((snapShot) => {
+    taskListSnapShot.map((snapShot) => {
       snapshotIds.push(snapShot.task_id);
     });
 
+       /*TO TASK DELETE QUEUE */
     if (snapshotIds.includes(targetId)) {
-      deleteTaskFS(targetId);
+      setDeletedTasks(targetId)
     }
     deleteTask(targetId);
-  }
+  };
 
   return (
     <Sheet>
@@ -118,8 +102,7 @@ export default function BoardDrawer({sectionSnapshot,tasksSnapShot}:DrawerProps)
                   <section className="flex w-full flex-col items-start justify-start gap-3">
                     <div className="w-full rounded-xl bg-zinc-800 px-6 py-4">
                       <p className="max-w-full break-all text-lg font-semibold text-white">
-                        {card.task_title} in
-                        {section.section_name}
+                        {`${card.task_title} in ${section.section_name}`}
                       </p>
                     </div>
                     <div className="flex flex-row items-center justify-start gap-3 pl-2 text-white">
