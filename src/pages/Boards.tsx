@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/shadcn/popover";
 
 import {  useNavigate } from "react-router-dom";
-import HLink from "@/components/HLink";
+import {Link } from "react-router-dom"
 
 import { Input } from "@/components/ui/shadcn/input";
 
@@ -399,13 +399,13 @@ export default function Boards() {
         {/* board list link to board */}
 
         {alivingBoards.map((board) => (
-          <HLink to={`/boards/${board.board_id}`}>
+          <Link to={`/boards/${board.board_id}`}>
             <BoardCard
               bgColor={board.board_bg_color}
               boardName={board.board_name}
               boardStatus={board.board_status}
             />
-          </HLink>
+          </Link>
         ))}
       </section>
 
@@ -440,13 +440,13 @@ export default function Boards() {
           <main className="flex max-h-80 w-full flex-col items-center justify-start gap-4 overflow-auto py-3">
             {archivedBoards.map((board) => (
               <section className="flex w-full flex-col items-start justify-start gap-3 px-2">
-                <HLink to={`/boards/${board.board_id}`}  >
+                <link to={`/boards/${board.board_id}`}  >
                   <BoardCard
                     bgColor={board.board_bg_color}
                     boardName={board.board_name}
                     boardStatus={board.board_status}
                   />
-                </HLink>
+                </link>
                 <div className="flex flex-row items-center justify-start gap-3 pl-2 text-white">
                   {/* restore task */}
                   <p
