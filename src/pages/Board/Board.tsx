@@ -124,6 +124,8 @@ export default function Board() {
   };
 
   const dispatchRef = useRef<() => Promise<void>>();
+  /**왜 여기에 선언해야 하는지 설명해야 함 */
+  dispatchRef.current = syncToFS;
 
   const {
     setTaskList,
@@ -190,8 +192,11 @@ export default function Board() {
       /*       unsubscribe && unsubscribe();
       onSanpShot 리스너 해지       */
 
-      dispatchRef.current = syncToFS; //+
-      dispatchRef.current()
+       //+
+      if(dispatchRef.current){
+        dispatchRef.current()
+      }
+      
       unsubscribe && unsubscribe();
     };
   }, []);
