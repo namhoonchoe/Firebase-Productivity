@@ -39,7 +39,7 @@ export type TaskDocument = {
   task_id: string;
   section_id: string;
   board_id: string;
-  start_date: Date| string;
+  start_date: Date ;
   due_date: Date | string;
   task_title: string;
   description: string  ;
