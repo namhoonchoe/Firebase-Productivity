@@ -35,9 +35,6 @@ export default function BoardDrawer() {
   const archivedList = taskList.filter((task) => task.archived);
   const archivedSections = sections.filter((section) => section.archived);
 
-
-   
-
   /** delete section handler */
   const dsHandler = (targetId: string) => {
     const snapshotIds = [] as string[];
@@ -46,10 +43,25 @@ export default function BoardDrawer() {
       snapshotIds.push(snapShot.section_id);
     });
 
-      /*TO SECTION DELETE QUEUE */
+    /*To Task delete queue */
+    taskListSnapShot.map((snapShot) => {
+      if (snapShot.section_id === targetId) {
+        setDeletedTasks(snapShot.task_id);
+      }
+    });
+
+    /* delete tasks in section */
+    taskList.map((task) => {
+      if (task.section_id === targetId) {
+        deleteTask(task.task_id);
+      }
+    });
+
+    /*TO SECTION DELETE QUEUE */
     if (snapshotIds.includes(targetId)) {
-      setDeletedSections(targetId)
+      setDeletedSections(targetId);
     }
+
     deleteSection(targetId);
   };
 
@@ -61,9 +73,9 @@ export default function BoardDrawer() {
       snapshotIds.push(snapShot.task_id);
     });
 
-       /*TO TASK DELETE QUEUE */
+    /*TO TASK DELETE QUEUE */
     if (snapshotIds.includes(targetId)) {
-      setDeletedTasks(targetId)
+      setDeletedTasks(targetId);
     }
     deleteTask(targetId);
   };

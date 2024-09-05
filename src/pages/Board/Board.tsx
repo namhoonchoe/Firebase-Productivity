@@ -120,8 +120,7 @@ export default function Board() {
     });
 
     await batch.commit();
-    console.log("function dispatched")
-  };
+   };
 
   const dispatchRef = useRef<() => Promise<void>>();
   /**왜 여기에 선언해야 하는지 설명해야 함 */

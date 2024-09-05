@@ -74,7 +74,7 @@ export default function DraggableCard({
   return (
     <Dialog open={isOpen} onOpenChange={toggleOpen}>
       <DialogTrigger>
-        <div className="flex w-64 items-start justify-start rounded-xl bg-zinc-700 px-6 py-4">
+        <div className="flex w-64 items-start justify-start rounded-md bg-zinc-700 px-6 py-4">
           <p className="max-w-full break-all text-xl font-bold text-white">
             {task.task_title}
           </p>
