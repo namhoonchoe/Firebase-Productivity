@@ -6,9 +6,8 @@ import {
   doc,
   getDocs,
   onSnapshot,
-  query,
-  where,
-  writeBatch,
+  setDoc,
+   writeBatch,
 } from "firebase/firestore";
 
 import { db } from "@/services/firebase";
@@ -31,22 +30,34 @@ export default function Board() {
     board_name: "",
     board_description: "",
     board_due_date: "",
+    tasks: [],
+    sections: [],
     board_status: "",
     board_bg_color: "",
     last_edited: "",
-
+    section_ids: [],
+    taks_ids: [],
     archived: false,
   });
 
   const {
     sections,
     taskList,
+    sectionIds,
+    taskIds,
     sectionsSnapShot,
     taskListSnapShot,
     deletedSQ,
     deletedTQ,
+    setTaskList,
+    setSsnapshot,
+    setTsnapshot,
+    setSections,
+    setTaskIds,
+    setSectionIds,
+    resetState
   } = useKanbanStore();
-  
+
   const batch = writeBatch(db);
 
   const syncToFS = async () => {
@@ -55,6 +66,17 @@ export default function Board() {
     const newSQ = [] as SectionDocument[];
     const newTQ = [] as TaskDocument[];
 
+    setTaskIds(taskList)
+    setSectionIds(sections)
+
+
+    await setDoc(doc(db,`boards/${boardId}`), {
+      section_ids: sectionIds,
+      taks_ids: taskIds,
+    },{merge: true});
+    
+
+    /**set updated sq */
     sections.map((section: SectionDocument) => {
       if (!sectionsSnapShot.includes(section)) {
         newSQ.push(section);
@@ -68,7 +90,8 @@ export default function Board() {
         });
       }
     });
-
+    
+    /**set updated tq */
     taskList.map((task: TaskDocument) => {
       if (!taskListSnapShot.includes(task)) {
         newTQ.push(task);
@@ -84,55 +107,50 @@ export default function Board() {
     });
 
     deletedSQ.map((sectionId) =>
-      batch.delete(doc(db, "sections", sectionId)),
+      batch.delete(doc(db, `boards/${boardId}/sections`, sectionId)),
     );
 
     deletedTQ.map((taskId) => {
-      batch.delete(doc(db, "tasks", taskId));
+      batch.delete(doc(db, `boards/${boardId}/tasks`, taskId));
     });
 
     /** updated sections */
     updatedSQ.map((section: SectionDocument) => {
-      batch.update(doc(db, "sections", section.section_id), {
+      batch.update(doc(db, `boards/${boardId}/sections`, section.section_id), {
         ...section,
       });
     });
 
     /** updated tasks */
     updatedTQ.map((task: TaskDocument) => {
-      batch.update(doc(db, "tasks", task.task_id), {
+      batch.update(doc(db, `boards/${boardId}/tasks`, task.task_id), {
         ...task,
       });
     });
 
     /** add new sections to firestore */
     newSQ.map((section: SectionDocument) => {
-      batch.set(doc(db, "sections", section.section_id), {
+      batch.set(doc(db, `boards/${boardId}/sections`, section.section_id), {
         ...section,
       });
     });
 
     /** add new tasks to firetore */
     newTQ.map((task: TaskDocument) => {
-      batch.set(doc(db, "tasks", task.task_id), {
+      batch.set(doc(db, `boards/${boardId}/tasks`, task.task_id), {
         ...task,
       });
     });
 
+    /**send task ids to order tasklist */
+    
+
     await batch.commit();
-   };
+  };
 
   const dispatchRef = useRef<() => Promise<void>>();
   /**왜 여기에 선언해야 하는지 설명해야 함 */
   dispatchRef.current = syncToFS;
-
-  const {
-    setTaskList,
-    setSsnapshot,
-    setTsnapshot,
-    setSections,
-    setSectionIds,
-  } = useKanbanStore();
 
   const toggleEdit = () => setIsEdit(!isEdit);
 
@@ -143,20 +161,22 @@ export default function Board() {
 
   useEffect(() => {
     let unsubscribe: Unsubscribe | null = null;
+    resetState()
 
     const getBoard = async () => {
       const docRef = doc(db, "boards", `${boardId}`);
 
       unsubscribe = await onSnapshot(docRef, (doc) => {
         const board = doc.data() as BoardDocument;
+        console.log(board);
         setBoardState(board);
       });
     };
 
     const getSections = async () => {
-      const sectionRef = collection(db, "sections");
-      const sectionQ = query(sectionRef, where("board_id", "==", boardId));
-      const querySnapshot = await getDocs(sectionQ);
+      const querySnapshot = await getDocs(
+        collection(db, `boards/${boardId}/sections`),
+      );
 
       const sections = [] as Array<SectionDocument>;
 
@@ -170,9 +190,9 @@ export default function Board() {
     };
 
     const getTasks = async () => {
-      const taskRef = collection(db, "tasks");
-      const taskQ = query(taskRef, where("board_id", "==", boardId));
-      const querySnapshot = await getDocs(taskQ);
+      const querySnapshot = await getDocs(
+        collection(db, `boards/${boardId}/tasks`),
+      );
 
       const tasks = [] as Array<TaskDocument>;
 
@@ -181,6 +201,7 @@ export default function Board() {
       });
       setTaskList(tasks);
       setTsnapshot(tasks);
+      setTaskIds(tasks);
     };
 
     getBoard();
@@ -191,11 +212,11 @@ export default function Board() {
       /*       unsubscribe && unsubscribe();
       onSanpShot 리스너 해지       */
 
-       //+
-      if(dispatchRef.current){
-        dispatchRef.current()
+      //+
+      if (dispatchRef.current) {
+        dispatchRef.current();
       }
-      
+
       unsubscribe && unsubscribe();
     };
   }, []);

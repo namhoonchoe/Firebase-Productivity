@@ -89,6 +89,7 @@ export default function Boards() {
 
 
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const FormSchema = z.object({
     boardName: z.string(),
     backgroundColor: z.string(),
@@ -141,25 +142,19 @@ export default function Boards() {
   };
 
   const deleteBoard = async (targetId: string) => {
-    const sectionsRef = collection(db, "sections");
-    const tasksRef = collection(db, "tasks");
-
-    const taskQ = query(tasksRef, where("board_id", "==", targetId));
-    const sectionQ = query(sectionsRef, where("board_id", "==", targetId));
-
-    const sectionsInBoard = await getDocs(sectionQ);
-    const tasksInBoard = await getDocs(taskQ);
+    const sectionsInBoard = await getDocs(collection(db, `boards/${targetId}/sections`));
+    const tasksInBoard = await getDocs(collection(db, `boards/${targetId}/tasks`));
 
     /** delete all sections in deleted board  */
     sectionsInBoard.forEach((section) => {
       const { section_id } = section.data();
-      batch.delete(doc(db, "sections", section_id));
+      batch.delete(doc(db, `boards/${targetId}/sections`, section_id));
     });
 
     /* delete all tasks in deleted board  */
     tasksInBoard.forEach((task) => {
       const { task_id } = task.data();
-      batch.delete(doc(db, "tasks", task_id));
+      batch.delete(doc(db,  `boards/${targetId}/tasks`, task_id));
     });
 
     await batch.commit();
@@ -440,13 +435,13 @@ export default function Boards() {
           <main className="flex max-h-80 w-full flex-col items-center justify-start gap-4 overflow-auto py-3">
             {archivedBoards.map((board) => (
               <section className="flex w-full flex-col items-start justify-start gap-3 px-2">
-                <link to={`/boards/${board.board_id}`}  >
+                <Link to={`/boards/${board.board_id}`} className="w-full"  >
                   <BoardCard
                     bgColor={board.board_bg_color}
                     boardName={board.board_name}
                     boardStatus={board.board_status}
                   />
-                </link>
+                </Link>
                 <div className="flex flex-row items-center justify-start gap-3 pl-2 text-white">
                   {/* restore task */}
                   <p

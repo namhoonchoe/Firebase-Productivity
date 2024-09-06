@@ -1,7 +1,7 @@
-import { SectionDocument,TaskDocument } from "@/Types/FireStoreModels";
+import { SectionDocument, TaskDocument } from "@/Types/FireStoreModels";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-  
+
 type TaskPayload = {
   task_title: string;
   section_id: string;
@@ -17,24 +17,41 @@ type SectionPayload = {
 };
 
 /**인터페이스 타입에 주의 할 것 */
-
-interface IKanbanStore {
+type State = {
   sections: SectionDocument[];
   taskList: TaskDocument[];
   sectionsSnapShot: SectionDocument[];
   taskListSnapShot: TaskDocument[];
   sectionIds: string[];
+  taskIds: string[];
 
   deletedTQ: string[];
   deletedSQ: string[];
+};
 
+const initialState: State = {
+  sections: [],
+  taskList: [],
+  sectionsSnapShot: [],
+  taskListSnapShot: [],
+  sectionIds: [],
+  taskIds: [],
+
+  deletedTQ: [],
+  deletedSQ: [],
+};
+
+interface IKanbanStore {
+  resetState : () => void;
   setSectionIds: (sections: SectionDocument[]) => void;
+  setTaskIds: (tasks: TaskDocument[]) => void;
+
   setSections: (sections: SectionDocument[]) => void;
   setTaskList: (lists: TaskDocument[]) => void;
   setSsnapshot: (sections: SectionDocument[]) => void;
   setTsnapshot: (lists: TaskDocument[]) => void;
-  setDeletedTasks: (targetId:string) => void;
-  setDeletedSections: (targetId:string) => void;
+  setDeletedTasks: (targetId: string) => void;
+  setDeletedSections: (targetId: string) => void;
 
   createSection: (sectionName: string, boardId: string) => void;
   updateSection: (targetId: string, payload: SectionPayload) => void;
@@ -47,17 +64,25 @@ interface IKanbanStore {
   updateTask: (payload: TaskPayload, targetId: string) => void;
 }
 
-export const useKanbanStore = create<IKanbanStore>()(
+export const useKanbanStore = create<State & IKanbanStore>()(
   persist(
     (set) => ({
+      ...initialState,
       sections: [] as SectionDocument[],
       sectionsSnapShot: [] as SectionDocument[],
       taskList: [] as TaskDocument[],
       taskListSnapShot: [] as TaskDocument[],
+
       sectionIds: [] as string[],
+      taskIds: [] as string[],
 
       deletedTQ: [] as string[],
       deletedSQ: [] as string[],
+
+
+      resetState: () => {
+        set(initialState)
+      },
 
       setSections: (sections: SectionDocument[]) => {
         set(() => ({ sections: [...sections] }));
@@ -67,11 +92,9 @@ export const useKanbanStore = create<IKanbanStore>()(
         set(() => ({ sectionsSnapShot: [...sections] }));
       },
 
-      setDeletedSections: (targetId:string) => {
+      setDeletedSections: (targetId: string) => {
         set((state) => ({
-          deletedSQ:[
-            ...state.deletedSQ,targetId
-          ]
+          deletedSQ: [...state.deletedSQ, targetId],
         }));
       },
 
@@ -83,11 +106,9 @@ export const useKanbanStore = create<IKanbanStore>()(
         set(() => ({ taskListSnapShot: [...lists] }));
       },
 
-      setDeletedTasks: (targetId:string) => {
+      setDeletedTasks: (targetId: string) => {
         set((state) => ({
-          deletedTQ:[
-            ...state.deletedTQ,targetId
-          ]
+          deletedTQ: [...state.deletedTQ, targetId],
         }));
       },
 
@@ -96,6 +117,14 @@ export const useKanbanStore = create<IKanbanStore>()(
         sections.map((section) => idBucket.push(section.section_id));
         set(() => ({
           sectionIds: idBucket,
+        }));
+      },
+
+      setTaskIds: (tasks: TaskDocument[]) => {
+        const idBucket = [] as string[];
+        tasks.map((tasks) => idBucket.push(tasks.task_id));
+        set(() => ({
+          taskIds: idBucket,
         }));
       },
 
