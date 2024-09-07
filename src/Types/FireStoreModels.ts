@@ -15,23 +15,6 @@ export type MemoDocument = {
   bookmarked: boolean;
 };
 
-export type SectionDocument = {
-  board_id: string;
-  section_id: string;
-  section_name: string;
-  archived: boolean;
-};
-
-export type TaskDocument = {
-  task_id: string;
-  section_id: string;
-  board_id: string;
-  start_date: Date|string;
-  due_date: Date|string;
-  task_title: string;
-  description: string;
-  archived: boolean;
-};
 
 export type BoardDocument = {
   user_id: string;
@@ -42,9 +25,25 @@ export type BoardDocument = {
   board_status: string;
   board_bg_color: string;
   last_edited: string;
-  sections: SectionDocument[];
-  tasks: TaskDocument[];
-  section_ids:string[];
-  taks_ids:string[];
+  sectionList: string;
+  taskList: string;
+ 
+  archived: boolean;
+};
+
+
+export type Section = {
+  section_id: string;
+  section_name: string;
+  archived: boolean;
+};
+
+export type Task = {
+  task_id: string;
+  section_id: string;
+  start_date: Date | string;
+  due_date: Date | string;
+  task_title: string;
+  description: string;
   archived: boolean;
 };

@@ -60,8 +60,7 @@ import { cn } from "@/lib/utils";
 import { colors } from "@/utils/constants";
 import SeeArchiveIcon from "@/components/svgIcons/SeeArchiveIcon";
 import BoardCard from "@/components/ui/BoardCard";
-import { useKanbanStore } from "@/store/KanbanStore";
-
+ 
 export default function Boards() {
   const navigate = useNavigate();
   const user = auth.currentUser;
@@ -74,12 +73,10 @@ export default function Boards() {
 
   const [boards, setBoards] = useState<BoardDocument[]>([]);
 
-  const { setTaskList, setSections } = useKanbanStore();
-
+ 
   const alivingBoards = boards.filter((board) => board.archived === false);
   const archivedBoards = boards.filter((board) => board.archived === true);
-  const batch = writeBatch(db);
-
+ 
   type BoardPayload = {
     boardName: string;
     backgroundColor: string;
@@ -124,7 +121,8 @@ export default function Boards() {
         board_due_date: `${dueDate ? dueDate : ""}`,
         board_status: "",
         board_bg_color: backgroundColor,
-        section_ids: [],
+        taskList:"[]",
+        sectionList:"[]",
         archived: false,
       } as BoardDocument);
       navigate(`/boards/${boardId}`);
@@ -142,26 +140,7 @@ export default function Boards() {
   };
 
   const deleteBoard = async (targetId: string) => {
-    const sectionsInBoard = await getDocs(collection(db, `boards/${targetId}/sections`));
-    const tasksInBoard = await getDocs(collection(db, `boards/${targetId}/tasks`));
-
-    /** delete all sections in deleted board  */
-    sectionsInBoard.forEach((section) => {
-      const { section_id } = section.data();
-      batch.delete(doc(db, `boards/${targetId}/sections`, section_id));
-    });
-
-    /* delete all tasks in deleted board  */
-    tasksInBoard.forEach((task) => {
-      const { task_id } = task.data();
-      batch.delete(doc(db,  `boards/${targetId}/tasks`, task_id));
-    });
-
-    await batch.commit();
-    
-    setSections([]);
-    setTaskList([]);
-    /* delete target board */
+   /* delete target board */
     await deleteDoc(doc(db, "boards", targetId));
   };
   
@@ -185,6 +164,8 @@ export default function Boards() {
             board_due_date,
             board_status,
             board_bg_color,
+            taskList,
+            sectionList,
             archived,
           } = doc.data();
           return {
@@ -196,6 +177,8 @@ export default function Boards() {
             board_due_date,
             board_status,
             board_bg_color,
+            taskList,
+            sectionList,
             archived,
           };
         });

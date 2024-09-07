@@ -23,10 +23,10 @@ import {
 import { PopoverClose } from "@radix-ui/react-popover";
 import EraseIcon from "@/components/svgIcons/EraseIcon";
 import { useKanbanStore } from "@/store/KanbanStore";
-import { TaskDocument } from "@/Types/FireStoreModels";
-
+import { Task } from "@/Types/FireStoreModels";
+ 
 type SectionPopoverProps = {
-  filteredList: TaskDocument[];
+  filteredList: Task[];
   sectionId: string;
   sectionName: string;
   toggleEditMode: () => void;
