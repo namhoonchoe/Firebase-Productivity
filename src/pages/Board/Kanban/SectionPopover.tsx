@@ -45,7 +45,7 @@ export default function SectionPopover({
 
   return (
     <Popover open={isPopoverOpen} onOpenChange={() => toggleIsPopoverOpen()}>
-      <PopoverTrigger>
+      <PopoverTrigger className="hover:bg-zinc-700 p-1 rounded-lg z-10">
         <MoreIcon />
       </PopoverTrigger>
       <PopoverContent className="popover-content" align="start">

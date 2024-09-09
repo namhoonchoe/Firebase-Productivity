@@ -27,28 +27,14 @@ export default function BoardDrawer() {
     updateTask,
     updateSection,
     deleteSection,
-    sectionsSnapShot,
-    taskListSnapShot,
-    setDeletedSections,
-    setDeletedTasks,
+   
   } = useKanbanStore();
   const archivedList = taskList.filter((task) => task.archived);
   const archivedSections = sections.filter((section) => section.archived);
 
   /** delete section handler */
   const dsHandler = (targetId: string) => {
-    const snapshotIds = [] as string[];
-
-    sectionsSnapShot.map((snapShot) => {
-      snapshotIds.push(snapShot.section_id);
-    });
-
-    /*To Task delete queue */
-    taskListSnapShot.map((snapShot) => {
-      if (snapShot.section_id === targetId) {
-        setDeletedTasks(snapShot.task_id);
-      }
-    });
+     
 
     /* delete tasks in section */
     taskList.map((task) => {
@@ -57,28 +43,12 @@ export default function BoardDrawer() {
       }
     });
 
-    /*TO SECTION DELETE QUEUE */
-    if (snapshotIds.includes(targetId)) {
-      setDeletedSections(targetId);
-    }
-
+    
     deleteSection(targetId);
   };
 
   /** delete task handler */
-  const dtHandler = (targetId: string) => {
-    const snapshotIds = [] as string[];
-
-    taskListSnapShot.map((snapShot) => {
-      snapshotIds.push(snapShot.task_id);
-    });
-
-    /*TO TASK DELETE QUEUE */
-    if (snapshotIds.includes(targetId)) {
-      setDeletedTasks(targetId);
-    }
-    deleteTask(targetId);
-  };
+ 
 
   return (
     <Sheet>
@@ -139,7 +109,7 @@ export default function BoardDrawer() {
                         {/* delete task */}
                         <p
                           className="text-md flex items-center gap-3 rounded-xl px-3 py-2 capitalize hover:bg-zinc-900"
-                          onClick={() => dtHandler(card.task_id)}
+                          onClick={() => deleteTask(card.task_id)}
                         >
                           <DeleteIcon />
                           delete

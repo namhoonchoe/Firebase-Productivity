@@ -5,8 +5,7 @@ import {
   where,
   query,
   onSnapshot,
-  getDocs,
-  writeBatch,
+ 
   updateDoc,
   deleteDoc,
 } from "firebase/firestore";

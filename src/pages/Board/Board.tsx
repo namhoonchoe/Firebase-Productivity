@@ -52,8 +52,6 @@ export default function Board() {
 
   useOutsideClick({ ref: boardNameRef, handler: toggleEdit });
 
- 
-
   useEffect(() => {
     let unsubscribe: Unsubscribe | null = null;
     resetState();
@@ -97,7 +95,7 @@ export default function Board() {
       <div
         className={`h-[calc(100vh-120px)] w-full ${boardState.board_bg_color}`}
       >
-        <Kanban   />
+        <Kanban />
       </div>
     </section>
   );
