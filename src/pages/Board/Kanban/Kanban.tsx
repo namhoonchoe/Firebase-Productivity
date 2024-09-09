@@ -1,14 +1,10 @@
+import useDisable from "@/hooks/useDisable";
 import AddSectionForm from "./AddSectionForm";
 import DraggableSection from "./DraggableSection";
 import { useKanbanStore } from "@/store/KanbanStore";
 import { DndContext } from "@dnd-kit/core";
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { useEffect, useState } from "react";
+import { SortableContext } from "@dnd-kit/sortable";
+import { useState } from "react";
 
 export default function Kanban() {
   const { sections, swapSection } = useKanbanStore();
@@ -26,18 +22,8 @@ export default function Kanban() {
       swapSection(currentIndex, newIndex);
     }
   };
-
-  useEffect(() => {
-    window.addEventListener("mouseover", async () => {
-      setTimeout(() => setDisabled(false), 100);
-    });
-
-    return () => {
-      window.addEventListener("mouseover", async () => {
-        setTimeout(() => setDisabled(false), 100);
-      });
-    };
-  }, []);
+ 
+  useDisable(()=>setDisabled(false))
 
   return (
     <DndContext

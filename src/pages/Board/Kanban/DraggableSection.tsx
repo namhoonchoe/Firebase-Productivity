@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { useKanbanStore } from "@/store/KanbanStore";
 import { useOutsideClick } from "@/hooks/useOutsideClick";
-import {CSS} from '@dnd-kit/utilities';
+import { CSS } from "@dnd-kit/utilities";
 
 import { AddIcon } from "@/components/svgIcons";
 
@@ -9,18 +9,22 @@ import DraggableCard from "./DraggableCard";
 import { Input } from "@/components/ui/shadcn/input";
 import { useForm } from "react-hook-form";
 import AddCardForm from "./AddCardForm";
-import { useDraggable, Sensors } from "@dnd-kit/core";
-import {useSortable} from '@dnd-kit/sortable';
+import { useDroppable, DndContext } from "@dnd-kit/core";
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 
 import { Button } from "@/components/ui/shadcn/button";
 
 import SectionPopover from "./SectionPopover";
+import useDisable from "@/hooks/useDisable";
 
 type SectionProps = {
   sectionId: string;
   sectionName: string;
-  disabled:boolean
- 
+  disabled: boolean;
 };
 
 type FormInput = {
@@ -31,36 +35,27 @@ export default function DraggableSection({
   sectionId,
   sectionName,
   disabled,
- 
 }: SectionProps) {
+
+  const { taskList, updateSection, swapTask } = useKanbanStore();
+
+  /**for  data i/o */
+
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
-
-  const { taskList, updateSection, swapSection, sections } = useKanbanStore();
 
   const filteredList = taskList
     .filter((task) => task.section_id === sectionId)
     .filter((task) => !task.archived)
     .reverse();
 
-    const {
-      attributes,
-      listeners,
-      setNodeRef,
-      transform,
-      transition,
-    } = useSortable({id:sectionId,disabled:disabled});
-    
-    const style = {
-      transform: CSS.Transform.toString(transform),
-      transition,
-    };
 
+   /**handle form */ 
   const sectionNameRef = useRef<HTMLFormElement | null>(null);
 
-  const { register, handleSubmit, setValue } = useForm<FormInput>();
+  useOutsideClick({ ref: sectionNameRef, handler: () => setIsEditMode(false) });
 
-  /* element scroll to the top */
+  const { register, handleSubmit, setValue } = useForm<FormInput>();
 
   const toggleEditMode = () => setIsEditMode(!isEditMode);
   const toggleFormOpen = () => setIsFormOpen(!isFormOpen);
@@ -74,15 +69,45 @@ export default function DraggableSection({
     setIsEditMode(false);
   };
 
-  useOutsideClick({ ref: sectionNameRef, handler: () => setIsEditMode(false) });
+  /**for  dnd */
+
+  const [taskDisabled, setTaskDisabled] = useState<boolean>(true);
+
+  const { setNodeRef: DroppableRef } = useDroppable({
+    id: sectionId,
+  });
+
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: sectionId, disabled: disabled });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  const handleDragEnd = (event) => {
+    setTaskDisabled(true);
+    const { active, over } = event;
+    const ids = filteredList.map((task) => task.task_id);
+
+    if (active.id !== over.id) {
+      const currentIndex = ids.indexOf(active.id);
+      const newIndex = ids.indexOf(over.id);
+      swapTask(currentIndex, newIndex);
+    }
+  };
+
+  useDisable(() => setTaskDisabled(false));
 
   return (
     <section
       className="relative flex min-h-20 w-[272px] flex-shrink-0 flex-grow-0 flex-col items-center justify-start overflow-hidden rounded-md bg-zinc-900 py-3"
-      ref={setNodeRef} style={style} {...attributes} {...listeners}
-      
-     >
-      <header className="flex h-12 w-full items-center justify-between rounded-t-xl px-4 text-white z-10">
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+    >
+      <header className="z-10 flex h-12 w-full items-center justify-between rounded-t-xl px-4 text-white">
         {/**section name */}
         {isEditMode ? (
           <form
@@ -115,24 +140,41 @@ export default function DraggableSection({
           filteredList={filteredList}
         />
       </header>
-      <main className="flex max-h-[60vh] w-full flex-col items-center justify-start gap-3 overflow-y-auto py-2 z-10">
-        {isFormOpen && (
-          <AddCardForm sectionId={sectionId} toggleFormOpen={toggleFormOpen} />
-        )}
-        <>
-          {filteredList.map((task) => {
-            return (
-              <DraggableCard
-                key={task.task_id}
-                cardId={task.task_id}
-                sectionName={sectionName}
-              />
-            );
-          })}
-        </>
-      </main>
+      <DndContext
+        onDragStart={() => setTaskDisabled(false)}
+        onDragCancel={() => setTaskDisabled(true)}
+        onDragEnd={handleDragEnd}
+      >
+        <main
+          className="z-10 flex max-h-[60vh] w-full flex-col items-center justify-start gap-3 overflow-y-auto py-2"
+          ref={DroppableRef}
+        >
+          {isFormOpen && (
+            <AddCardForm
+              sectionId={sectionId}
+              toggleFormOpen={toggleFormOpen}
+            />
+          )}
+          <SortableContext
+            items={filteredList.map((task) => task.task_id)}
+            strategy={verticalListSortingStrategy}
+          >
+            {filteredList.map((task) => {
+              return (
+                <DraggableCard
+                  key={task.task_id}
+                  cardId={task.task_id}
+                  sectionName={sectionName}
+                  disabled={taskDisabled}
+                />
+              );
+            })}
+          </SortableContext>
+        </main>
+      </DndContext>
+
       <Button
-        className="flex h-10 w-64 flex-shrink-0 flex-grow-0 items-center justify-start gap-3 rounded-md bg-zinc-900 normal-case text-white z-10"
+        className="z-10 flex h-10 w-64 flex-shrink-0 flex-grow-0 items-center justify-start gap-3 rounded-md bg-zinc-900 normal-case text-white"
         onClick={toggleFormOpen}
       >
         <AddIcon width={20} height={20} />
