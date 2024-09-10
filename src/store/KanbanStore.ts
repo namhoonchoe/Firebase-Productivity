@@ -32,7 +32,7 @@ interface IKanbanStore {
   setSections: (sections: Section[]) => void;
   setTaskList: (lists: Task[]) => void;
   getAliveSections: () => Section[];
-   
+
   createSection: (sectionName: string, boardId: string) => void;
   updateSection: (targetId: string, payload: SectionPayload) => void;
   deleteSection: (targetId: string) => void;
@@ -42,7 +42,6 @@ interface IKanbanStore {
   createTask: (payload: TaskPayload, boardId: string) => void;
   deleteTask: (targetId: string) => void;
   updateTask: (payload: TaskPayload, targetId: string) => void;
-  swapTask: (currentIndex: number, targetIndex: number) => void;
 }
 
 export const useKanbanStore = create<State & IKanbanStore>()(
@@ -59,7 +58,7 @@ export const useKanbanStore = create<State & IKanbanStore>()(
       },
 
       getAliveSections: () => {
-       return get().sections.filter(section => !section.archived)
+        return get().sections.filter((section) => !section.archived);
       },
 
       setTaskList: (lists: Task[]) => {
@@ -169,34 +168,6 @@ export const useKanbanStore = create<State & IKanbanStore>()(
             }
           }),
         }));
-      },
-
-      swapTask: (currentIndex: number, targetIndex: number) => {
-        if (currentIndex > targetIndex) {
-          set((state) => ({
-            taskList: [
-              ...state.taskList.slice(0, targetIndex),
-              state.taskList[currentIndex] /** part a  */,
-              ...state.taskList.slice(targetIndex + 1, currentIndex),
-              /** part b */
-              state.taskList[targetIndex],
-              ...state.taskList.slice(currentIndex + 1),
-            ],
-          }));
-        }
-
-        if (currentIndex < targetIndex) {
-          set((state) => ({
-            taskList: [
-              ...state.taskList.slice(0, currentIndex),
-              state.taskList[targetIndex] /** part a  */,
-              ...state.taskList.slice(currentIndex + 1, targetIndex),
-              /** part b */
-              state.taskList[currentIndex],
-              ...state.taskList.slice(targetIndex + 1),
-            ],
-          }));
-        }
       },
     }),
 

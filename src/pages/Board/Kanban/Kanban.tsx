@@ -1,3 +1,4 @@
+import { Task } from "@/Types/FireStoreModels";
 import AddSectionForm from "./AddSectionForm";
 import DraggableSection from "./DraggableSection";
 import { useKanbanStore } from "@/store/KanbanStore";
@@ -8,10 +9,18 @@ export default function Kanban() {
     getAliveSections,
     sections,
     swapSection,
-    swapTask,
     taskList,
     updateTask,
+    setTaskList,
   } = useKanbanStore();
+
+  const reOrderTask = (currentIndex: number, targetIndex: number) => {
+    const result = [...taskList];
+    const [removed] = result.splice(currentIndex, 1);
+    result.splice(targetIndex, 0, removed);
+
+    return setTaskList(result);
+  };
 
   const onDragTask = (result: DropResult) => {
     const { source, destination } = result;
@@ -22,21 +31,20 @@ export default function Kanban() {
 
     /**inter section movement */
     if (source.droppableId !== destination?.droppableId) {
-    
-       const currentTask = taskList[source.index];
-   
+      const currentTask = taskList[source.index];
+
       const { task_id, ...payload } = currentTask;
 
       updateTask(
-        { ...payload, section_id:`${destination.droppableId}` },
+        { ...payload, section_id: `${destination.droppableId}` },
         task_id,
-      ); 
+      );
     } else {
       /**same section movement */
 
       const currentIndex = source.index;
       const targetIndex = destination.index;
-      swapTask(currentIndex, targetIndex);
+      reOrderTask(currentIndex, targetIndex);
     }
   };
 
@@ -89,7 +97,7 @@ export default function Kanban() {
                   key={section.section_id}
                 />
               ))}
-
+              {provided.placeholder}
               <AddSectionForm />
             </div>
           )}
