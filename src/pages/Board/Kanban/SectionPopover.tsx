@@ -41,7 +41,9 @@ export default function SectionPopover({
   const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
   const toggleIsPopoverOpen = () => setIsPopoverOpen(!isPopoverOpen);
 
-  const { sections, updateTask, updateSection, swapSection } = useKanbanStore();
+  const { sections, getAliveSections,updateTask, updateSection, swapSection } = useKanbanStore();
+
+ 
 
   return (
     <Popover open={isPopoverOpen} onOpenChange={() => toggleIsPopoverOpen()}>
@@ -93,7 +95,7 @@ export default function SectionPopover({
                   </label>
 
                   <section className="flex w-full flex-col items-start justify-start gap-2">
-                    {sections.map((section) => {
+                    {getAliveSections().map((section) => {
                       const [currentSection] = sections.filter(
                         (section) => section.section_id === sectionId,
                       );

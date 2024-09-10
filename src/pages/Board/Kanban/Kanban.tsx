@@ -1,54 +1,64 @@
-import useDisable from "@/hooks/useDisable";
 import AddSectionForm from "./AddSectionForm";
 import DraggableSection from "./DraggableSection";
 import { useKanbanStore } from "@/store/KanbanStore";
-import { DndContext } from "@dnd-kit/core";
-import { SortableContext } from "@dnd-kit/sortable";
-import { useState } from "react";
+import { DragDropContext, Droppable, DropResult } from "@hello-pangea/dnd";
 
 export default function Kanban() {
-  const { sections, swapSection } = useKanbanStore();
-  const aliveSections = sections.filter((section) => !section.archived);
-  const [disabled, setDisabled] = useState<boolean>(true);
+  const { getAliveSections, sections,swapSection } = useKanbanStore();
+ 
+  const onDragTask = (result: DropResult) => {};
 
-  const handleDragEnd = (event) => {
-    setDisabled(true);
-    const { active, over } = event;
-    const ids = aliveSections.map((section) => section.section_id);
+  const onDragSection = (result: DropResult) => {
+    const { destination, source } = result;
+    console.log(source?.index)
+    console.log(destination?.index)
+  
+    /*cancel drag */
+    if (destination !== null) {
+      const currentIndex = source.index;
+      const targetIndex = destination.index;
 
-    if (active.id !== over.id) {
-      const currentIndex = ids.indexOf(active.id);
-      const newIndex = ids.indexOf(over.id);
-      swapSection(currentIndex, newIndex);
+      swapSection(currentIndex, targetIndex);
     }
   };
- 
-  useDisable(()=>setDisabled(false))
 
-  return (
-    <DndContext
-      onDragStart={() => setDisabled(false)}
-      onDragCancel={() => setDisabled(true)}
-      onDragEnd={handleDragEnd}
-    >
-      <div className="flex h-full w-full items-start justify-start gap-20 overflow-auto bg-transparent px-5 py-6">
-        <SortableContext
-          items={aliveSections.map((section) => section.section_id)}
-          /**
-           * https://github.com/clauderic/dnd-kit/issues/807  Amareis 참조!!!
-           */
+  const handleDragEnd = (result: DropResult) => {
+    const { type } = result;
+    if (type !== "drop-task") {
+      onDragTask(result);
+    } else {
+      onDragSection(result);
+    }
+  };
+
+  if (getAliveSections())
+    return (
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <Droppable
+          droppableId="all-columns"
+          direction="horizontal"
+          type="drop-task"
         >
-          {aliveSections.map((section) => (
-            <DraggableSection
-              sectionName={section.section_name}
-              sectionId={section.section_id}
-              disabled={disabled}
-              key={section.section_id}
-            />
-          ))}
-        </SortableContext>
-        <AddSectionForm />
-      </div>
-    </DndContext>
-  );
+          {(provided) => (
+            <div
+              className="flex h-full w-full items-start justify-start gap-20 overflow-auto bg-transparent px-5 py-6"
+              ref={provided.innerRef}
+              {...provided.droppableProps}
+            >
+              {getAliveSections().map((section) => (
+                <DraggableSection
+                  sectionName={section.section_name}
+                  sectionId={section.section_id}
+                  sectionIndex={sections.indexOf(section)}
+                  /**swap은 원본을 바꿔야 한다!!!! */
+                  key={section.section_id}
+                />
+              ))}
+             
+              <AddSectionForm />
+            </div>
+          )}
+        </Droppable>
+      </DragDropContext>
+    );
 }

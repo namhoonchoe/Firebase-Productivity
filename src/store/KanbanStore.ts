@@ -31,7 +31,8 @@ interface IKanbanStore {
   resetState: () => void;
   setSections: (sections: Section[]) => void;
   setTaskList: (lists: Task[]) => void;
-
+  getAliveSections: () => Section[];
+   
   createSection: (sectionName: string, boardId: string) => void;
   updateSection: (targetId: string, payload: SectionPayload) => void;
   deleteSection: (targetId: string) => void;
@@ -46,7 +47,7 @@ interface IKanbanStore {
 
 export const useKanbanStore = create<State & IKanbanStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       ...initialState,
 
       resetState: () => {
@@ -55,6 +56,10 @@ export const useKanbanStore = create<State & IKanbanStore>()(
 
       setSections: (sections: Section[]) => {
         set(() => ({ sections: [...sections] }));
+      },
+
+      getAliveSections: () => {
+       return get().sections.filter(section => !section.archived)
       },
 
       setTaskList: (lists: Task[]) => {
@@ -194,6 +199,7 @@ export const useKanbanStore = create<State & IKanbanStore>()(
         }
       },
     }),
+
     {
       name: "kanbanStorage", // name of the item in the storage (must be unique)
       storage: createJSONStorage(() => sessionStorage), // (optional) by default, 'localStorage' is used

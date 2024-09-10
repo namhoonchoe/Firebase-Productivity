@@ -84,6 +84,7 @@ export default function Board() {
 
   if (!boardState) return <div>Loading...</div>;
 
+ 
   return (
     <section className="flex w-full flex-col items-start justify-start">
       <BoardHeader
