@@ -162,7 +162,7 @@ export const useKanbanStore = create<State & IKanbanStore>()(
       updateTask: (payload: TaskPayload, taskId: string) => {
         set((state) => ({
           taskList: state.taskList.map((task: Task) => {
-            if (task.task_id === taskId) {
+            if (task && task.task_id === taskId) {
               return { ...task, ...payload };
             } else {
               return task;

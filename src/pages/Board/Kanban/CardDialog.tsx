@@ -46,7 +46,7 @@ export default function CardDialog({
   sectionName,
 }: CardDialogProps) {
   const { taskList, updateTask } = useKanbanStore();
-  const [task] = taskList.filter((task) => task.task_id === cardId);
+  const [task] = taskList.filter((task) => task?.task_id === cardId);
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const toggleOpen = () => setIsOpen(!isOpen);

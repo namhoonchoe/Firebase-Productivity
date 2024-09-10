@@ -8,39 +8,47 @@ export default function Kanban() {
     getAliveSections,
     sections,
     swapSection,
-    updateTask,
     swapTask,
     taskList,
+    updateTask,
   } = useKanbanStore();
 
   const onDragTask = (result: DropResult) => {
     const { source, destination } = result;
 
-    /**same section movement */
-    if (source.droppableId === destination?.droppableId) {
-      const currentIndex = source.index;
-      const targetIndex = destination.index;
-      swapTask(currentIndex, targetIndex);
+    if (destination === null) {
+      return;
     }
 
     /**inter section movement */
     if (source.droppableId !== destination?.droppableId) {
-      const currentTask = taskList[source.index];
-      
+    
+       const currentTask = taskList[source.index];
+   
       const { task_id, ...payload } = currentTask;
+
+      updateTask(
+        { ...payload, section_id:`${destination.droppableId}` },
+        task_id,
+      ); 
+    } else {
+      /**same section movement */
+
       const currentIndex = source.index;
-      const targetIndex = destination?.index as number;
-
-      updateTask({ ...payload, section_id:`${ destination?.droppableId}` }, task_id);
+      const targetIndex = destination.index;
       swapTask(currentIndex, targetIndex);
-
     }
   };
 
   const onDragSection = (result: DropResult) => {
     const { destination, source } = result;
+    console.log(source?.index);
+    console.log(destination?.index);
 
     /*cancel drag */
+    if (destination === null) {
+      return;
+    }
     if (destination !== null) {
       const currentIndex = source.index;
       const targetIndex = destination.index;
@@ -81,7 +89,7 @@ export default function Kanban() {
                   key={section.section_id}
                 />
               ))}
-              {provided.placeholder}
+
               <AddSectionForm />
             </div>
           )}
