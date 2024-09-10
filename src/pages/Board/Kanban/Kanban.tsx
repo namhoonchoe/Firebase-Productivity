@@ -4,15 +4,42 @@ import { useKanbanStore } from "@/store/KanbanStore";
 import { DragDropContext, Droppable, DropResult } from "@hello-pangea/dnd";
 
 export default function Kanban() {
-  const { getAliveSections, sections,swapSection } = useKanbanStore();
- 
-  const onDragTask = (result: DropResult) => {};
+  const {
+    getAliveSections,
+    sections,
+    swapSection,
+    updateTask,
+    swapTask,
+    taskList,
+  } = useKanbanStore();
+
+  const onDragTask = (result: DropResult) => {
+    const { source, destination } = result;
+
+    /**same section movement */
+    if (source.droppableId === destination?.droppableId) {
+      const currentIndex = source.index;
+      const targetIndex = destination.index;
+      swapTask(currentIndex, targetIndex);
+    }
+
+    /**inter section movement */
+    if (source.droppableId !== destination?.droppableId) {
+      const currentTask = taskList[source.index];
+      
+      const { task_id, ...payload } = currentTask;
+      const currentIndex = source.index;
+      const targetIndex = destination?.index as number;
+
+      updateTask({ ...payload, section_id:`${ destination?.droppableId}` }, task_id);
+      swapTask(currentIndex, targetIndex);
+
+    }
+  };
 
   const onDragSection = (result: DropResult) => {
     const { destination, source } = result;
-    console.log(source?.index)
-    console.log(destination?.index)
-  
+
     /*cancel drag */
     if (destination !== null) {
       const currentIndex = source.index;
@@ -54,7 +81,7 @@ export default function Kanban() {
                   key={section.section_id}
                 />
               ))}
-             
+              {provided.placeholder}
               <AddSectionForm />
             </div>
           )}

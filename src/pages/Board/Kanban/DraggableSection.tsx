@@ -69,7 +69,7 @@ export default function DraggableSection({
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          >
+        >
           <header className="z-10 flex h-12 w-full items-center justify-between rounded-t-xl px-4 text-white">
             {/**section name */}
             {isEditMode ? (
@@ -103,26 +103,37 @@ export default function DraggableSection({
               filteredList={filteredList}
             />
           </header>
+          <Droppable
+            key={sectionId}
+            droppableId={sectionId}
+            direction="horizontal"
+          >
+            {(provided) => (
+              <main
+                className="z-10 flex max-h-[60vh] w-full flex-col items-center justify-start gap-3 overflow-y-auto py-2"
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+              >
+                {isFormOpen && (
+                  <AddCardForm
+                    sectionId={sectionId}
+                    toggleFormOpen={toggleFormOpen}
+                  />
+                )}
 
-          <main className="z-10 flex max-h-[60vh] w-full flex-col items-center justify-start gap-3 overflow-y-auto py-2">
-            {isFormOpen && (
-              <AddCardForm
-                sectionId={sectionId}
-                toggleFormOpen={toggleFormOpen}
-              />
+                {filteredList.map((task) => {
+                  return (
+                    <DraggableCard
+                      key={task.task_id}
+                      cardId={task.task_id}
+                      sectionName={sectionName}
+                    />
+                  );
+                })}
+                {provided.placeholder}
+              </main>
             )}
-
-            {filteredList.map((task) => {
-              return (
-                <DraggableCard
-                  key={task.task_id}
-                  cardId={task.task_id}
-                  sectionName={sectionName}
-                />
-              );
-            })}
-          </main>
-
+          </Droppable>
           <Button
             className="z-10 flex h-10 w-64 flex-shrink-0 flex-grow-0 items-center justify-start gap-3 rounded-md bg-zinc-900 normal-case text-white"
             onClick={toggleFormOpen}
