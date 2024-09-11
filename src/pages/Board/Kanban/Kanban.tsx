@@ -1,4 +1,3 @@
-import { Task } from "@/Types/FireStoreModels";
 import AddSectionForm from "./AddSectionForm";
 import DraggableSection from "./DraggableSection";
 import { useKanbanStore } from "@/store/KanbanStore";
@@ -31,12 +30,17 @@ export default function Kanban() {
 
     /**inter section movement */
     if (source.droppableId !== destination?.droppableId) {
-      const currentTask = taskList[source.index];
+
+      const currentIndex = source.index;
+      const targetIndex = destination.index;
+      
+      const currentTask = taskList[currentIndex];
 
       const { task_id, ...payload } = currentTask;
 
+      reOrderTask(currentIndex, targetIndex);
       updateTask(
-        { ...payload, section_id: `${destination.droppableId}` },
+        { ...payload, section_id: `${destination.droppableId}`},
         task_id,
       );
     } else {
@@ -50,9 +54,7 @@ export default function Kanban() {
 
   const onDragSection = (result: DropResult) => {
     const { destination, source } = result;
-    console.log(source?.index);
-    console.log(destination?.index);
-
+    
     /*cancel drag */
     if (destination === null) {
       return;
