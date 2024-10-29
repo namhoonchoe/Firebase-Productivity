@@ -10,16 +10,16 @@ import MemoIntro from "@/pages/MemoIntro";
 import Memo from "@/pages/Memo";
 import { Outlet } from "react-router";
 import ProtectedRoute from "./ProtectedRoute";
-import SidebarLayout from "./layouts/SidebarLayout";
+import ColumnLayout from "./layouts/ColumnLayout";
 
 const RootRouter = createBrowserRouter([
   {
     path: "/",
     element: (
       <ProtectedRoute>
-        <SidebarLayout>
+        <ColumnLayout>
           <Outlet />
-        </SidebarLayout>
+        </ColumnLayout>
       </ProtectedRoute>
     ),
     children: [

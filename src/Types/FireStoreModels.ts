@@ -40,7 +40,7 @@ export type Section = {
 
 export type Task = {
   task_id: string;
-  section_id: string;
+   section_id: string;
   start_date: Date | string;
   due_date: Date | string;
   task_title: string;

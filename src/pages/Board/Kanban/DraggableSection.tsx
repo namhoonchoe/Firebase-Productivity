@@ -56,8 +56,7 @@ export default function DraggableSection({
 
   const filteredTasks = taskList
     ?.filter((task) => !task?.archived)
-    .filter((task) => task?.section_id === sectionId)
-     
+    .filter((task) => task?.section_id === sectionId);
 
   /**for  dnd */
   if (taskList)
@@ -103,18 +102,16 @@ export default function DraggableSection({
                 filteredList={filteredTasks}
               />
             </header>
-            <Droppable
-              droppableId={sectionId}
-              direction="vertical"
-            >
+            <Droppable droppableId={sectionId} direction="vertical">
               {(provided) => (
                 <main
-                  className="z-10 flex max-h-[60vh] w-full flex-col items-center justify-start gap-3 overflow-y-auto grow  py-2"
+                  className="z-10 flex max-h-[60vh] w-full grow flex-col items-center justify-start gap-3 overflow-y-auto py-2"
                   ref={provided.innerRef}
                   {...provided.droppableProps}
                 >
                   {isFormOpen && (
                     <AddCardForm
+                      
                       sectionId={sectionId}
                       toggleFormOpen={toggleFormOpen}
                     />

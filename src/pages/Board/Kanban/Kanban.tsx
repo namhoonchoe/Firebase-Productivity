@@ -28,19 +28,17 @@ export default function Kanban() {
       return;
     }
 
-    /**inter section movement */
+    /**inter section movement => 수정 필요함!!! */ 
     if (source.droppableId !== destination?.droppableId) {
-
       const currentIndex = source.index;
       const targetIndex = destination.index;
-      
+ 
       const currentTask = taskList[currentIndex];
-
       const { task_id, ...payload } = currentTask;
 
       reOrderTask(currentIndex, targetIndex);
       updateTask(
-        { ...payload, section_id: `${destination.droppableId}`},
+        { ...payload, section_id: `${destination.droppableId}` },
         task_id,
       );
     } else {
@@ -48,13 +46,14 @@ export default function Kanban() {
 
       const currentIndex = source.index;
       const targetIndex = destination.index;
+ 
       reOrderTask(currentIndex, targetIndex);
     }
   };
 
   const onDragSection = (result: DropResult) => {
     const { destination, source } = result;
-    
+
     /*cancel drag */
     if (destination === null) {
       return;
@@ -69,7 +68,7 @@ export default function Kanban() {
 
   const handleDragEnd = (result: DropResult) => {
     const { type } = result;
-    if (type !== "drop-task") {
+    if (type !== "drop-section") {
       onDragTask(result);
     } else {
       onDragSection(result);
@@ -82,7 +81,7 @@ export default function Kanban() {
         <Droppable
           droppableId="all-columns"
           direction="horizontal"
-          type="drop-task"
+          type="drop-section"
         >
           {(provided) => (
             <div

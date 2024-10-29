@@ -13,12 +13,12 @@ type FormInput = {
 
 type AddCardFormProps = {
   sectionId: string;
-  toggleFormOpen: () => void;
+   toggleFormOpen: () => void;
 };
 
 export default function AddCardForm({
   sectionId,
-  toggleFormOpen,
+   toggleFormOpen,
 }: AddCardFormProps) {
   const { register, handleSubmit, setValue } = useForm<FormInput>();
   const { createTask } = useKanbanStore();
@@ -33,7 +33,7 @@ export default function AddCardForm({
     createTask(
       {
         section_id: sectionId,
-        task_title: cardName,
+         task_title: cardName,
         description: "",
         start_date: "",
         due_date: "",

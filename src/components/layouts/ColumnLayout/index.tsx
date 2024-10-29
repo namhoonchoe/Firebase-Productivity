@@ -1,7 +1,7 @@
 import { ReactElement, useState } from "react";
-import {HamburgerIcon} from "@/components/svgIcons";
+import { HamburgerIcon } from "@/components/svgIcons";
 import MenuPopover from "./MenuPopover";
-import Sidebar from "./Sidebar";
+import Navigation from "./Navigation";
 export default function SidebarLayout({
   children,
 }: {
@@ -10,26 +10,24 @@ export default function SidebarLayout({
   const [isShrinked, setisShrinked] = useState(false);
 
   return (
-    <div className="fit-center">
+    <div className="fit-center h-full">
       <section
-        className={`${
-          isShrinked ? "layout-grid-shrinked" : "layout-grid"
-        } w-full relative`}
+        className={`relative flex h-full w-full flex-col items-center justify-start`}
       >
         {/* header */}
-        <header className="flex justify-between items-center grid-header w-full h-14 px-6 py-2 bg-zinc-900 ">
+        <header className="flex h-14 w-full items-center justify-between bg-zinc-900 px-6 py-2">
           <button onClick={() => setisShrinked(!isShrinked)}>
             <HamburgerIcon />
           </button>
 
-          <div className="flex justify-start items-center flex-grow-0 flex-shrink-0 w-[500px] relative overflow-hidden gap-2.5 px-4 py-3 rounded-3xl bg-zinc-700">
+          <div className="relative flex w-[500px] flex-shrink-0 flex-grow-0 items-center justify-start gap-2.5 overflow-hidden rounded-3xl bg-zinc-700 px-4 py-3">
             <svg
               width={25}
               height={24}
               viewBox="0 0 25 24"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
-              className="flex-grow-0 flex-shrink-0 w-6 h-6"
+              className="h-6 w-6 flex-shrink-0 flex-grow-0"
               preserveAspectRatio="none"
             >
               <mask
@@ -51,14 +49,12 @@ export default function SidebarLayout({
               </g>
             </svg>
           </div>
-         <MenuPopover/>
+          <MenuPopover />
         </header>
 
-        {/* sidebar */}
-        <Sidebar isShrinked={isShrinked} />
-
+        <Navigation />
         {/*main */}
-        <section className="h-full grid-main  ">{children}</section>
+        <section className="h-full w-full">{children}</section>
       </section>
     </div>
   );
