@@ -15,7 +15,6 @@ export type MemoDocument = {
   bookmarked: boolean;
 };
 
-
 export type BoardDocument = {
   user_id: string;
   board_id: string;
@@ -27,10 +26,9 @@ export type BoardDocument = {
   last_edited: string;
   sectionList: string;
   taskList: string;
- 
+
   archived: boolean;
 };
-
 
 export type Section = {
   section_id: string;
@@ -40,7 +38,7 @@ export type Section = {
 
 export type Task = {
   task_id: string;
-   section_id: string;
+  section_id: string;
   start_date: Date | string;
   due_date: Date | string;
   task_title: string;

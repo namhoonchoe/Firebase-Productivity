@@ -5,8 +5,7 @@ import { useOutsideClick } from "@/hooks/useOutsideClick";
 
 import { Button } from "@/components/ui/shadcn/button";
 import { Input } from "@/components/ui/shadcn/input";
-import { useParams } from "react-router-dom";
-
+ 
 type FormInput = {
   cardName: string;
 };
@@ -22,8 +21,7 @@ export default function AddCardForm({
 }: AddCardFormProps) {
   const { register, handleSubmit, setValue } = useForm<FormInput>();
   const { createTask } = useKanbanStore();
-  const { boardId } = useParams();
-
+ 
   const taskFormRef = useRef<HTMLFormElement | null>(null);
 
   // Close form when clicking outside
@@ -38,8 +36,7 @@ export default function AddCardForm({
         start_date: "",
         due_date: "",
         archived: false,
-      },
-      `${boardId}`,
+      } 
     );
     setValue("cardName", "");
     toggleFormOpen();

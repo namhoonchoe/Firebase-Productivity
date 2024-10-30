@@ -1,3 +1,4 @@
+import { Task } from "@/Types/FireStoreModels";
 import AddSectionForm from "./AddSectionForm";
 import DraggableSection from "./DraggableSection";
 import { useKanbanStore } from "@/store/KanbanStore";
@@ -28,25 +29,56 @@ export default function Kanban() {
       return;
     }
 
-    /**inter section movement => 수정 필요함!!! */ 
+    /**inter section movement => 수정 필요함!!! */
     if (source.droppableId !== destination?.droppableId) {
       const currentIndex = source.index;
       const targetIndex = destination.index;
- 
-      const currentTask = taskList[currentIndex];
-      const { task_id, ...payload } = currentTask;
 
-      reOrderTask(currentIndex, targetIndex);
+      const sectionIds = sections.map((section) => section.section_id);
+
+      const currentList = taskList.filter(
+        (item) => item.section_id === source.droppableId,
+      );
+
+      const targetList = taskList.filter(
+        (item) => item.section_id === destination.droppableId,
+      );
+
+      const draggingTask = currentList[currentIndex];
+      const { task_id, ...payload } = draggingTask;
+
       updateTask(
         { ...payload, section_id: `${destination.droppableId}` },
         task_id,
       );
+
+      //현재 리스트에서 삭제
+      currentList.splice(currentIndex, 1);
+      //타겟 리스트에 추가
+      targetList.splice(targetIndex, 0, draggingTask);
+
+      // 전체 리스트 업데이트
+
+      const groupBysectionId = taskList.reduce(
+        (acc: { [key: string]: Task[] }, curr) => {
+          const { section_id } = curr;
+          if (acc[section_id]) {
+            acc[section_id].push(curr);
+          } else {
+            acc[section_id] = [curr];
+          }
+          return acc;
+        },
+        {},
+      );
+
+      console.log(Object.values(groupBysectionId));
     } else {
       /**same section movement */
 
       const currentIndex = source.index;
       const targetIndex = destination.index;
- 
+
       reOrderTask(currentIndex, targetIndex);
     }
   };

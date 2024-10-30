@@ -33,13 +33,13 @@ interface IKanbanStore {
   setTaskList: (lists: Task[]) => void;
   getAliveSections: () => Section[];
 
-  createSection: (sectionName: string, boardId: string) => void;
+  createSection: (sectionName: string) => void;
   updateSection: (targetId: string, payload: SectionPayload) => void;
   deleteSection: (targetId: string) => void;
   clearSection: (targetSectionId: string) => void;
   swapSection: (currentIndex: number, targetIndex: number) => void;
 
-  createTask: (payload: TaskPayload, boardId: string) => void;
+  createTask: (payload: TaskPayload) => void;
   deleteTask: (targetId: string) => void;
   updateTask: (payload: TaskPayload, targetId: string) => void;
 }
@@ -65,13 +65,12 @@ export const useKanbanStore = create<State & IKanbanStore>()(
         set(() => ({ taskList: [...lists] }));
       },
 
-      createSection: (sectionName: string, boardId: string) =>
+      createSection: (sectionName: string) =>
         set((state) => ({
           sections: [
             ...state.sections,
             {
               section_name: sectionName,
-              board_id: boardId,
               section_id: crypto.randomUUID(),
               archived: false,
             },
@@ -138,13 +137,12 @@ export const useKanbanStore = create<State & IKanbanStore>()(
         }));
       },
 
-      createTask: (payload: TaskPayload, boardId: string) => {
+      createTask: (payload: TaskPayload) => {
         set((state) => ({
           taskList: [
             ...state.taskList,
             {
               ...payload,
-              board_id: boardId,
               task_id: crypto.randomUUID(),
               archived: false,
             },
