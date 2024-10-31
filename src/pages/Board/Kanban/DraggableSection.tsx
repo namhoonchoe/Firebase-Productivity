@@ -53,9 +53,11 @@ export default function DraggableSection({
     setValue("sectionName", "");
     setIsEditMode(false);
   };
-  console.log(getTaskList(sectionId))
-  const filteredTasks = [...getTaskList(sectionId)].filter((task) => !task.archived)
-     
+
+  const filteredTasks =
+    getTaskList(sectionId) !== undefined
+      ? [...getTaskList(sectionId)].filter((task) => !task.archived)
+      : [];
 
   /**for  dnd */
   if (filteredTasks)
@@ -110,7 +112,6 @@ export default function DraggableSection({
                 >
                   {isFormOpen && (
                     <AddCardForm
-                      
                       sectionId={sectionId}
                       toggleFormOpen={toggleFormOpen}
                     />
@@ -123,7 +124,7 @@ export default function DraggableSection({
                         cardId={task.task_id}
                         sectionName={sectionName}
                         sectionId={sectionId}
-                       />
+                      />
                     );
                   })}
                   {provided.placeholder}

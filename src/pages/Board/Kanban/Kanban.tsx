@@ -19,8 +19,8 @@ export default function Kanban() {
       const currentIndex = source.index;
       const targetIndex = destination.index;
 
-      const currentList = [...getTaskList(source.droppableId)];
-      const targetList = [...getTaskList(destination.droppableId)];
+      const currentList = getTaskList !== undefined ? [...getTaskList(source.droppableId)] :[];
+      const targetList = getTaskList !== undefined ? [...getTaskList(destination.droppableId)] :[];
       // current task 선택
       // source에서 current task 제거
 

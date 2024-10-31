@@ -150,7 +150,10 @@ export const useKanbanStore = create<State & IKanbanStore>()(
         set((state) => ({
           sections: state.sections.map((section) => {
             if (section.section_id === sectionId) {
-              return { ...section, task_list: [...section.task_list, newTask] };
+              return {
+                ...section,
+                task_list: [...section.task_list, newTask],
+              };
             } else {
               return section;
             }
