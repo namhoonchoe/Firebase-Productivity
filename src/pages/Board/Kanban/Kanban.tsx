@@ -4,22 +4,8 @@ import { useKanbanStore } from "@/store/KanbanStore";
 import { DragDropContext, Droppable, DropResult } from "@hello-pangea/dnd";
 
 export default function Kanban() {
-  const {
-    getAliveSections,
-    sections,
-    swapSection,
-    getTaskList,
-    updateTask,
-    setTaskList,
-  } = useKanbanStore();
-
-  const reOrderTask = (currentIndex: number, targetIndex: number) => {
-    const result = [...getTaskList()];
-    const [removed] = result.splice(currentIndex, 1);
-    result.splice(targetIndex, 0, removed);
-
-    return setTaskList(result);
-  };
+  const { getAliveSections, sections, swapSection, getTaskList  } =
+    useKanbanStore();
 
   const onDragTask = (result: DropResult) => {
     const { source, destination } = result;
@@ -33,24 +19,23 @@ export default function Kanban() {
       const currentIndex = source.index;
       const targetIndex = destination.index;
 
-      const currentTask = getTaskList()[currentIndex];
-      const { task_id, ...payload } = currentTask;
+      const currentList = [...getTaskList(source.droppableId)];
+      const targetList = [...getTaskList(destination.droppableId)];
+      // current task 선택
+      // source에서 current task 제거
 
-      updateTask(
-        { ...payload, section_id: `${destination.droppableId}` },
-        task_id,
-      );
-      reOrderTask(currentIndex, targetIndex);
-   
+      const [currentTask] = currentList.splice(currentIndex, 1);
+      // target section에 current task 추가
+      targetList.splice(targetIndex, 0, currentTask);
+
+      //
     } else {
-      /**same section movement */
-
       const currentIndex = source.index;
       const targetIndex = destination.index;
 
-      reOrderTask(currentIndex, targetIndex);
-      console.log(currentIndex);
-      console.log(targetIndex);
+      const currentList = [...getTaskList(source.droppableId)];
+      const [removed] = currentList.splice(currentIndex, 1);
+      currentList.splice(targetIndex, 0, removed);
     }
   };
 

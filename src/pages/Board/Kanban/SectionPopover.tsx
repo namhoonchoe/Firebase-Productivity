@@ -138,7 +138,7 @@ export default function SectionPopover({
                   onClick={() => {
                     filteredList.map((task) => {
                       const { task_id, ...payload } = task;
-                      updateTask({ ...payload, archived: true }, task_id);
+                      updateTask({ ...payload, archived: true }, task_id,sectionId);
                     });
                     toggleIsPopoverOpen();
                   }}

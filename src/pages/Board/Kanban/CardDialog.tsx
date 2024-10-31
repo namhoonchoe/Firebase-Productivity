@@ -38,15 +38,18 @@ import React, { useState } from "react";
 type CardDialogProps = {
   children: React.ReactNode;
   cardId: string;
+  sectionId: string;
   sectionName: string;
 };
 export default function CardDialog({
   children,
   cardId,
+  sectionId,
   sectionName,
 }: CardDialogProps) {
-  const { taskList, updateTask } = useKanbanStore();
-  const [task] = taskList.filter((task) => task?.task_id === cardId);
+  const { updateTask,getTaskList } = useKanbanStore();
+  // const [task] = taskList.filter((task) => task?.task_id === cardId);
+  const [task] = getTaskList(sectionId).filter((task) => task?.task_id === cardId);
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const toggleOpen = () => setIsOpen(!isOpen);
@@ -70,7 +73,7 @@ export default function CardDialog({
 
   const submitHandler = (data: z.infer<typeof FormSchema>) => {
     const { task_id, ...payload } = task;
-    updateTask({ ...payload, ...data }, task_id);
+    updateTask({ ...payload, ...data }, task_id,sectionId);
     console.log("summit successfully");
   };
 
@@ -236,7 +239,7 @@ export default function CardDialog({
                 className="flex flex-shrink-0 flex-grow-0 items-center justify-center gap-2.5 rounded-md bg-red-500 px-4 py-2"
                 onClick={() => {
                   const { task_id, ...payload } = task;
-                  updateTask({ ...payload, archived: true }, task_id);
+                  updateTask({ ...payload, archived: true }, task_id,sectionId);
                 }}
               >
                 <ToArchiveIcon />

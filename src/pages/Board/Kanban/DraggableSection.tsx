@@ -53,13 +53,12 @@ export default function DraggableSection({
     setValue("sectionName", "");
     setIsEditMode(false);
   };
-
-  const filteredTasks = getTaskList()
-    ?.filter((task) => !task?.archived)
-    .filter((task) => task?.section_id === sectionId);
+  console.log(getTaskList(sectionId))
+  const filteredTasks = [...getTaskList(sectionId)].filter((task) => !task.archived)
+     
 
   /**for  dnd */
-  if ( getTaskList())
+  if (filteredTasks)
     return (
       <Draggable draggableId={sectionId} index={sectionIndex} key={sectionId}>
         {(provided) => (
@@ -123,6 +122,7 @@ export default function DraggableSection({
                         key={task.task_id}
                         cardId={task.task_id}
                         sectionName={sectionName}
+                        sectionId={sectionId}
                        />
                     );
                   })}

@@ -4,7 +4,6 @@ import { Task, Section } from "@/Types/FireStoreModels";
 
 type TaskPayload = {
   task_title: string;
-  section_id: string;
   description: string;
   start_date: Date | string;
   due_date: Date | string;
@@ -19,37 +18,37 @@ type SectionPayload = {
 /**인터페이스 타입에 주의 할 것 */
 type State = {
   sections: Section[];
-  taskList: Task[];
 };
 
 const initialState: State = {
   sections: [],
-  taskList: [],
 };
 
 interface IKanbanStore {
   resetState: () => void;
   setSections: (sections: Section[]) => void;
-  setTaskList: (lists: Task[]) => void;
   getAliveSections: () => Section[];
-  
-  createSection: (sectionName: string, boardId: string) => void;
+
+  createSection: (sectionName: string) => void;
   updateSection: (targetId: string, payload: SectionPayload) => void;
   deleteSection: (targetId: string) => void;
-  clearSection: (targetSectionId: string) => void;
+  clearSection: (targetId: string) => void;
   swapSection: (currentIndex: number, targetIndex: number) => void;
 
-  getTaskList: () => Task[];
-  createTask: (payload: TaskPayload, boardId: string) => void;
-  deleteTask: (targetId: string) => void;
-  updateTask: (payload: TaskPayload, targetId: string) => void;
+  getTaskList: (secctionId: string) => Task[];
+  createTask: (payload: TaskPayload, sectionId: string) => void;
+  deleteTask: (targetId: string, sectionId: string) => void;
+  updateTask: (
+    payload: TaskPayload,
+    targetId: string,
+    sectionId: string,
+  ) => void;
 }
 
 export const useKanbanStore = create<State & IKanbanStore>()(
   persist(
     (set, get) => ({
       ...initialState,
-
       resetState: () => {
         set(initialState);
       },
@@ -62,23 +61,15 @@ export const useKanbanStore = create<State & IKanbanStore>()(
         return get().sections.filter((section) => !section.archived);
       },
 
-      getTaskList: () => {
-        return get().taskList
-      },
-
-      setTaskList: (list: Task[]) => {
-        set(() => ({ taskList: [...list] }));
-      },
-
-      createSection: (sectionName: string, boardId: string) =>
+      createSection: (sectionName: string) =>
         set((state) => ({
           sections: [
             ...state.sections,
             {
               section_name: sectionName,
-              board_id: boardId,
               section_id: crypto.randomUUID(),
               archived: false,
+              task_list: [],
             },
           ],
         })),
@@ -131,45 +122,75 @@ export const useKanbanStore = create<State & IKanbanStore>()(
         }));
       },
 
-      clearSection: (targetSectionId: string) => {
+      clearSection: (sectionId: string) => {
         set((state) => ({
-          taskList: state.taskList.map((task) => {
-            if (task.section_id === targetSectionId) {
-              return { ...task, archived: true };
+          sections: state.sections.map((section) => {
+            if (section.section_id === sectionId) {
+              return { ...section, task_list: [] };
             } else {
-              return task;
+              return section;
             }
           }),
         }));
       },
 
-      createTask: (payload: TaskPayload, boardId: string) => {
-        set((state) => ({
-          taskList: [
-            ...state.taskList,
-            {
-              ...payload,
-              board_id: boardId,
-              task_id: crypto.randomUUID(),
-              archived: false,
-            },
-          ],
-        }));
+      getTaskList: (sectionId: string) => {
+        return get().sections.filter(
+          (section) => section.section_id === sectionId,
+        )[0].task_list;
       },
 
-      deleteTask: (taskId: string) => {
-        set((state) => ({
-          taskList: state.taskList.filter((task) => task.task_id !== taskId),
-        }));
-      },
+      createTask: (payload: TaskPayload, sectionId: string) => {
+        const newTask = {
+          ...payload,
+          task_id: crypto.randomUUID(),
+          archived: false,
+        };
 
-      updateTask: (payload: TaskPayload, taskId: string) => {
         set((state) => ({
-          taskList: state.taskList.map((task: Task) => {
-            if (task && task.task_id === taskId) {
-              return { ...task, ...payload };
+          sections: state.sections.map((section) => {
+            if (section.section_id === sectionId) {
+              return { ...section, task_list: [...section.task_list, newTask] };
             } else {
-              return task;
+              return section;
+            }
+          }),
+        }));
+      },
+
+      deleteTask: (taskId: string, sectionId: string) => {
+        set((state) => ({
+          sections: state.sections.map((section) => {
+            if (section.section_id === sectionId) {
+              return {
+                ...section,
+                task_list: section.task_list.filter(
+                  (task) => task.task_id !== taskId,
+                ),
+              };
+            } else {
+              return section;
+            }
+          }),
+        }));
+      },
+
+      updateTask: (payload: TaskPayload, taskId: string, sectionId: string) => {
+        set((state) => ({
+          sections: state.sections.map((section) => {
+            if (section.section_id === sectionId) {
+              return {
+                ...section,
+                task_list: section.task_list.map((task: Task) => {
+                  if (task && task.task_id === taskId) {
+                    return { ...task, ...payload };
+                  } else {
+                    return task;
+                  }
+                }),
+              };
+            } else {
+              return section;
             }
           }),
         }));

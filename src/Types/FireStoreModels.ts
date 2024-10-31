@@ -25,7 +25,6 @@ export type BoardDocument = {
   board_bg_color: string;
   last_edited: string;
   sectionList: string;
-  taskList: string;
   archived: boolean;
 };
 
@@ -33,11 +32,11 @@ export type Section = {
   section_id: string;
   section_name: string;
   archived: boolean;
+  task_list:Task []
 };
 
 export type Task = {
   task_id: string;
-  section_id: string;
   start_date: Date | string;
   due_date: Date | string;
   task_title: string;

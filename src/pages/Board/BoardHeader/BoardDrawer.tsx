@@ -18,34 +18,39 @@ import {
 } from "@/components/ui/shadcn/tabs";
 import { CloseIcon, DeleteIcon, RestoreIcon } from "@/components/svgIcons";
 import { useKanbanStore } from "@/store/KanbanStore";
+import { Task } from "@/Types/FireStoreModels";
 
 export default function BoardDrawer() {
   const {
-    taskList,
     sections,
+    getAliveSections,
     deleteTask,
     updateTask,
     updateSection,
     deleteSection,
   } = useKanbanStore();
-  const archivedList = taskList.filter((task) => task?.archived);
+ 
+  interface ArchivedTask extends Task {
+    section_id: string;
+  }
+
+  // const archivedList = taskList.filter((task) => task?.archived);
   const archivedSections = sections.filter((section) => section?.archived);
+  const archivedTasks: ArchivedTask[] = [];
 
-  /** delete section handler */
-  const dsHandler = (targetId: string) => {
-    /* delete tasks in section */
-    taskList.map((task) => {
-      if (task?.section_id === targetId) {
-        deleteTask(task.task_id);
-      }
+  //get arhived tasks
+  getAliveSections().map((section) => {
+    section.task_list.map((task) => {
+      if (task.archived) archivedTasks.push({
+        ...task,
+        section_id: section.section_id,
+      });
     });
-
-    deleteSection(targetId);
-  };
+  });
 
   /** delete task handler */
 
-  if (archivedList && archivedSections)
+  if (archivedTasks && archivedSections)
     return (
       <Sheet>
         <SheetTrigger>
@@ -69,13 +74,13 @@ export default function BoardDrawer() {
               <TabsTrigger value="sections">Sections</TabsTrigger>
             </TabsList>
             <TabsContent value="cards">
-              <ul className="flex w-full flex-col items-center justify-start gap-4 py-4">
+            <ul className="flex w-full flex-col items-center justify-start gap-4 py-4">
                 {/* archived cards */}
-                {archivedList.map((card) => {
+                {archivedTasks.map((card) => {
                   const [section] = sections.filter(
                     (section) => section.section_id === card.section_id,
                   );
-                  const { task_id: targetId, ...payload } = card;
+                  const { task_id: targetId,section_id , ...payload } = card;
                   return (
                     <section className="flex w-full flex-col items-start justify-start gap-3">
                       <div className="w-full rounded-xl bg-zinc-800 px-6 py-4">
@@ -95,6 +100,7 @@ export default function BoardDrawer() {
                                   archived: false,
                                 },
                                 targetId,
+                                section_id
                               )
                             }
                           >
@@ -105,7 +111,7 @@ export default function BoardDrawer() {
                           {/* delete task */}
                           <p
                             className="text-md flex items-center gap-3 rounded-xl px-3 py-2 capitalize hover:bg-zinc-900"
-                            onClick={() => deleteTask(card.task_id)}
+                            onClick={() => deleteTask(card.task_id, section_id)}
                           >
                             <DeleteIcon />
                             delete
@@ -116,6 +122,8 @@ export default function BoardDrawer() {
                   );
                 })}
               </ul>
+
+              {/* archived cards */}
             </TabsContent>
             <TabsContent value="sections">
               <ul className="flex w-full flex-col items-center justify-start gap-4 py-4">
@@ -128,7 +136,7 @@ export default function BoardDrawer() {
                         </p>
                       </div>
                       <div className="flex flex-row items-center justify-start gap-3 pl-2 text-white">
-                        {/* restore task */}
+                        {/* restore section */}
                         <p
                           className="text-md flex items-center gap-3 rounded-xl px-3 py-2 capitalize hover:bg-zinc-900"
                           onClick={() => {
@@ -142,10 +150,10 @@ export default function BoardDrawer() {
                           <RestoreIcon /> restore
                         </p>
 
-                        {/* delete task */}
+                        {/* delete section */}
                         <p
                           className="text-md flex items-center gap-3 rounded-xl px-3 py-2 capitalize hover:bg-zinc-900"
-                          onClick={() => dsHandler(section.section_id)}
+                          onClick={() => deleteSection(section.section_id)}
                         >
                           <DeleteIcon />
                           delete

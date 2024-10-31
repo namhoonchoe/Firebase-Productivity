@@ -5,7 +5,6 @@ import { useOutsideClick } from "@/hooks/useOutsideClick";
 
 import { Button } from "@/components/ui/shadcn/button";
 import { Input } from "@/components/ui/shadcn/input";
-import { useParams } from "react-router-dom";
 
 type FormInput = {
   cardName: string;
@@ -13,16 +12,15 @@ type FormInput = {
 
 type AddCardFormProps = {
   sectionId: string;
-   toggleFormOpen: () => void;
+  toggleFormOpen: () => void;
 };
 
 export default function AddCardForm({
   sectionId,
-   toggleFormOpen,
+  toggleFormOpen,
 }: AddCardFormProps) {
   const { register, handleSubmit, setValue } = useForm<FormInput>();
   const { createTask } = useKanbanStore();
-  const { boardId } = useParams();
 
   const taskFormRef = useRef<HTMLFormElement | null>(null);
 
@@ -32,14 +30,13 @@ export default function AddCardForm({
   const handleValid = ({ cardName }: FormInput) => {
     createTask(
       {
-        section_id: sectionId,
-         task_title: cardName,
+        task_title: cardName,
         description: "",
         start_date: "",
         due_date: "",
         archived: false,
       },
-      `${boardId}`,
+      sectionId,
     );
     setValue("cardName", "");
     toggleFormOpen();

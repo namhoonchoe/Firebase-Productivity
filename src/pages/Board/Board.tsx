@@ -23,20 +23,18 @@ export default function Board() {
     board_bg_color: "",
     last_edited: "",
     sectionList: "[]",
-    taskList: "[]",
+ 
     archived: false,
   });
 
-  const { resetState, setTaskList, setSections, sections, taskList } =
+  const { resetState,   setSections, sections } =
     useKanbanStore();
   const batch = writeBatch(db);
   const syncToFS = async () => {
     batch.update(doc(db, `boards/${boardId}`), {
       sectionList: JSON.stringify(sections),
     });
-    batch.update(doc(db, `boards/${boardId}`), {
-      taskList: JSON.stringify(taskList),
-    });
+    
 
     await batch.commit();
   };
@@ -63,8 +61,7 @@ export default function Board() {
         const board = doc.data() as BoardDocument;
         setBoardState(board);
         setSections(JSON.parse(board.sectionList));
-        setTaskList(JSON.parse(board.taskList));
-      });
+       });
     };
 
     getBoard();
