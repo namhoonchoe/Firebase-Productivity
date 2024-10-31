@@ -5,19 +5,20 @@ import { Draggable } from "@hello-pangea/dnd";
 export default function DraggableCard({
   cardId,
   sectionName,
+   
 }: {
   cardId: string;
   sectionName: string;
-}) {
-  const { taskList } = useKanbanStore();
-  const [task] = taskList.filter((task) => task?.task_id === cardId);
+ }) {
+  const { getTaskList } = useKanbanStore();
+  const [task] = getTaskList().filter((task) => task?.task_id === cardId);
 
-  if (taskList)
+  if (getTaskList())
     return (
       <Draggable
         key={task.task_id}
         draggableId={task.task_id}
-        index={taskList.indexOf(task)}
+        index={getTaskList().indexOf(task)}
       >
         {(provided) => (
           <CardDialog sectionName={sectionName} cardId={cardId}>

@@ -28,7 +28,7 @@ export default function DraggableSection({
   sectionName,
   sectionIndex,
 }: SectionProps) {
-  const { taskList, updateSection } = useKanbanStore();
+  const { getTaskList, updateSection } = useKanbanStore();
 
   /**for  data i/o */
 
@@ -54,12 +54,12 @@ export default function DraggableSection({
     setIsEditMode(false);
   };
 
-  const filteredTasks = taskList
+  const filteredTasks = getTaskList()
     ?.filter((task) => !task?.archived)
     .filter((task) => task?.section_id === sectionId);
 
   /**for  dnd */
-  if (taskList)
+  if ( getTaskList())
     return (
       <Draggable draggableId={sectionId} index={sectionIndex} key={sectionId}>
         {(provided) => (
@@ -123,7 +123,7 @@ export default function DraggableSection({
                         key={task.task_id}
                         cardId={task.task_id}
                         sectionName={sectionName}
-                      />
+                       />
                     );
                   })}
                   {provided.placeholder}

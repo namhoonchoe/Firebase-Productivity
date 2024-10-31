@@ -32,13 +32,14 @@ interface IKanbanStore {
   setSections: (sections: Section[]) => void;
   setTaskList: (lists: Task[]) => void;
   getAliveSections: () => Section[];
-
+  
   createSection: (sectionName: string, boardId: string) => void;
   updateSection: (targetId: string, payload: SectionPayload) => void;
   deleteSection: (targetId: string) => void;
   clearSection: (targetSectionId: string) => void;
   swapSection: (currentIndex: number, targetIndex: number) => void;
 
+  getTaskList: () => Task[];
   createTask: (payload: TaskPayload, boardId: string) => void;
   deleteTask: (targetId: string) => void;
   updateTask: (payload: TaskPayload, targetId: string) => void;
@@ -61,8 +62,12 @@ export const useKanbanStore = create<State & IKanbanStore>()(
         return get().sections.filter((section) => !section.archived);
       },
 
-      setTaskList: (lists: Task[]) => {
-        set(() => ({ taskList: [...lists] }));
+      getTaskList: () => {
+        return get().taskList
+      },
+
+      setTaskList: (list: Task[]) => {
+        set(() => ({ taskList: [...list] }));
       },
 
       createSection: (sectionName: string, boardId: string) =>

@@ -8,13 +8,13 @@ export default function Kanban() {
     getAliveSections,
     sections,
     swapSection,
-    taskList,
+    getTaskList,
     updateTask,
     setTaskList,
   } = useKanbanStore();
 
   const reOrderTask = (currentIndex: number, targetIndex: number) => {
-    const result = [...taskList];
+    const result = [...getTaskList()];
     const [removed] = result.splice(currentIndex, 1);
     result.splice(targetIndex, 0, removed);
 
@@ -28,26 +28,29 @@ export default function Kanban() {
       return;
     }
 
-    /**inter section movement => 수정 필요함!!! */ 
+    /**inter section movement => 수정 필요함!!! */
     if (source.droppableId !== destination?.droppableId) {
       const currentIndex = source.index;
       const targetIndex = destination.index;
- 
-      const currentTask = taskList[currentIndex];
+
+      const currentTask = getTaskList()[currentIndex];
       const { task_id, ...payload } = currentTask;
 
-      reOrderTask(currentIndex, targetIndex);
       updateTask(
         { ...payload, section_id: `${destination.droppableId}` },
         task_id,
       );
+      reOrderTask(currentIndex, targetIndex);
+   
     } else {
       /**same section movement */
 
       const currentIndex = source.index;
       const targetIndex = destination.index;
- 
+
       reOrderTask(currentIndex, targetIndex);
+      console.log(currentIndex);
+      console.log(targetIndex);
     }
   };
 
