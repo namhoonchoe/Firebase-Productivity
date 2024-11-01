@@ -4,7 +4,7 @@ import { useKanbanStore } from "@/store/KanbanStore";
 import { DragDropContext, Droppable, DropResult } from "@hello-pangea/dnd";
 
 export default function Kanban() {
-  const { getAliveSections, sections, swapSection, getTaskList  } =
+  const { getAliveSections, sections, swapSection, getTaskList,setTaskList  } =
     useKanbanStore();
 
   const onDragTask = (result: DropResult) => {
@@ -19,14 +19,16 @@ export default function Kanban() {
       const currentIndex = source.index;
       const targetIndex = destination.index;
 
-      const currentList = getTaskList !== undefined ? [...getTaskList(source.droppableId)] :[];
-      const targetList = getTaskList !== undefined ? [...getTaskList(destination.droppableId)] :[];
+      const currentList = getTaskList !== undefined ?  [...getTaskList(source.droppableId)] :[];
+      const targetList = getTaskList !== undefined ? [...getTaskList(destination.droppableId)]  :[];
       // current task 선택
       // source에서 current task 제거
 
       const [currentTask] = currentList.splice(currentIndex, 1);
       // target section에 current task 추가
       targetList.splice(targetIndex, 0, currentTask);
+      setTaskList(source.droppableId, currentList)
+      setTaskList(destination.droppableId,targetList)
 
       //
     } else {
@@ -36,6 +38,7 @@ export default function Kanban() {
       const currentList = [...getTaskList(source.droppableId)];
       const [removed] = currentList.splice(currentIndex, 1);
       currentList.splice(targetIndex, 0, removed);
+      setTaskList(source.droppableId, currentList)
     }
   };
 

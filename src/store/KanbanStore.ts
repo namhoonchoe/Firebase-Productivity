@@ -36,6 +36,7 @@ interface IKanbanStore {
   swapSection: (currentIndex: number, targetIndex: number) => void;
 
   getTaskList: (secctionId: string) => Task[];
+  setTaskList: (secctionId: string,newTaskList:Task[]) => void;
   createTask: (payload: TaskPayload, sectionId: string) => void;
   deleteTask: (targetId: string, sectionId: string) => void;
   updateTask: (
@@ -140,6 +141,22 @@ export const useKanbanStore = create<State & IKanbanStore>()(
         )[0].task_list;
       },
 
+      setTaskList:(sectionId: string, newTaskList:Task[]) => {
+        set((state) => ({
+          sections: state.sections.map((section) => {
+            if (section.section_id === sectionId) {
+               
+              return {
+                ...section,
+                task_list: [...newTaskList]
+              };
+            } else {
+              return section;
+            }
+          }),
+        }));
+      },
+
       createTask: (payload: TaskPayload, sectionId: string) => {
         const newTask = {
           ...payload,
@@ -150,9 +167,10 @@ export const useKanbanStore = create<State & IKanbanStore>()(
         set((state) => ({
           sections: state.sections.map((section) => {
             if (section.section_id === sectionId) {
+              const taskList = section.task_list
               return {
                 ...section,
-                task_list: [...section.task_list, newTask],
+                task_list: [...taskList,newTask]
               };
             } else {
               return section;
